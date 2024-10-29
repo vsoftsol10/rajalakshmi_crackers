@@ -1,0 +1,91 @@
+.navsmain {
+    background-color: red;
+}
+
+.div1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.heads {
+    color: white;
+    position: relative;
+    top: 10%;
+    display: flex;
+    align-items: center; 
+    white-space: nowrap; 
+    overflow: hidden;
+    animation: trainFlow 20s linear infinite;
+    gap: 1rem;
+}
+
+.phone-icon {
+    font-size: 26px; /* Adjust icon size */
+}
+
+#tsparticles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+  }
+
+.phone-number {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.phone-number:hover {
+    color: lightyellow;
+}
+
+@keyframes trainFlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(0); 
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.heads:hover {
+    animation-play-state: paused; 
+}
+
+
+
+.divs2 {
+    display: flex; 
+    justify-content: center; 
+    margin-top: 20px;
+}
+
+.socialIcons {
+    display: flex; 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+}
+
+.socialIcons li {
+    margin: 0 15px; 
+}
+
+.socialIcons a {
+    color: white; 
+    font-size: 28px;
+    text-decoration: none;}
+
+   
+    
+
+  
+
+  
