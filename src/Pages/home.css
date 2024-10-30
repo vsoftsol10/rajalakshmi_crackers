@@ -1,5 +1,6 @@
 .navsmain {
-    background-color: red;
+    background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
+    background-repeat: no-repeat;
 }
 
 .div1 {
@@ -16,7 +17,7 @@
     align-items: center; 
     white-space: nowrap; 
     overflow: hidden;
-    animation: trainFlow 20s linear infinite;
+    animation: trainFlow 40s linear infinite;
     gap: 1rem;
 }
 

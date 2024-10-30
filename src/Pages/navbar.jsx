@@ -1,6 +1,6 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Input } from "@nextui-org/react";
 import { AcmeLogo } from "./AcmeLogo.jsx";
-import { SearchIcon } from "./Searchss.jsx";
+
 import './nav.css';  
 import { CgLogIn } from "react-icons/cg";
 
@@ -21,7 +21,7 @@ export default function App() {
 
         <NavbarContent className="navbar-links"> 
           <NavbarItem>
-            <Link color="foreground" href="#">
+            <Link color="foreground" href="/pricelist">
               Crackers
             </Link>
           </NavbarItem>
@@ -44,18 +44,7 @@ export default function App() {
 
       
         <NavbarContent as="div" className="navbar-actions">
-          <Input
-            classNames={{
-              base: "max-w-full sm:max-w-[10rem] h-10",
-              mainWrapper: "h-full",
-              input: "text-small",
-              inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-            }}
-            placeholder="Type to search..."
-            size="sm"
-            startContent={<SearchIcon size={18} />}
-            type="search"
-          />
+         
           <NavbarContent as="div" className="users">
             <div className="privacy-icon1">  <Link href="/login" >
             <CgLogIn />

@@ -1,6 +1,6 @@
 
 .navbar {
-  background: linear-gradient(to right,white,white, yellow);
+  background: linear-gradient(to right,white, yellow);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
     padding: 10px 20px; 
   }
@@ -24,7 +24,7 @@
     align-items: center;
     list-style: none; 
     text-decoration: none; 
- 
+ font-size: 1.2rem;
   }
   
   .navbar a {
@@ -49,7 +49,7 @@
     padding: 8px; 
     border: 1px solid red; 
     border-radius: 4px; 
-    margin-left: 15px; 
+    margin-left: 0%; 
   }
   
   .users {
@@ -60,13 +60,13 @@
  }
 
     .privacy-icon1 {
-      font-size: 29px; 
+      font-size: 40px; 
 
       color: inherit;
       cursor: pointer; 
   }
   .privacy-icon2 {
-    font-size: 29px; 
+    font-size: 40px; 
 
     color: inherit;
     cursor: pointer; 
@@ -75,7 +75,7 @@
   
  
   
-  /* Responsive Adjustments */
+
   @media (max-width: 480px) {
     .navbar-columns {
       flex-direction: column; /* Stack items on small screens */

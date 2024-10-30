@@ -1,0 +1,99 @@
+.footer {
+    background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #fff;
+    padding: 20px 0; 
+}
+
+.footer .socialIcons {
+    display: flex;
+    justify-content: center; 
+    margin-bottom: 0px; }
+
+.footer .socialIcons a {
+    color: #fff;
+    transition: color 0.3s;
+    font-size: 33px;
+    margin-right: 25px; /* Space between icons */
+}
+
+.footer .socialIcons a:hover {
+    color: #db241e; 
+}
+
+.footer h6 {
+    color: #ffeb3b;
+    margin-bottom: 10px; 
+}
+
+.footer a {
+    color: #fff; 
+    text-decoration: none; 
+}
+
+.footer a:hover {
+    text-decoration: underline; 
+}
+
+.footer .text-center {
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.01); 
+    padding: 10px 0; 
+}
+
+.footer .row {
+    margin: 0; 
+}
+
+.footer .mx-auto {
+    margin-top: 15px; 
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); 
+    gap: 20px; 
+}
+
+/* Center-align text in each column */
+.footer-col {
+    text-align: center; 
+}
+
+/* Responsive grid adjustments */
+@media (min-width: 768px) {
+    .footer-grid {
+        grid-template-columns: repeat(3, 1fr); /* Three columns on larger screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 20px; /* Reduced padding on smaller screens */
+    }
+
+    .footer .text-center {
+        font-size: 14px; /* Adjusted font size for smaller screens */
+    }
+}
+
+@media (min-width: 769px) {
+    .footer h6 {
+        font-size: 1.25rem; /* Increased font size for headings on larger screens */
+    }
+}
+
+/* Additional styling for spacing */
+.footer .d-flex {
+    justify-content: center; /* Center align for the first row */
+}
+
+.footer .row .col-md-3,
+.footer .row .col-md-4 {
+    margin-bottom: 20px;
+}
+
+.footer .row .col-lg-2 {
+    text-align: left; /* Align text to left in useful links */
+}
