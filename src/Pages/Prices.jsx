@@ -1,53 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { useNavigate } from 'react-router-dom';
 import './PriceList.css';
 
-const Prices = () => {
-    const priceListData = {
-        sparkles: { name: "Sparkles", content: "Colorful sparkles.", price: 100 },
-        soundcracker: { name: "Sound Cracker", content: "Loud and fun.", price: 150 },
-        bijili: { name: "Bijili", content: "Traditional firecracker.", price: 120 },
-        "ground-chakkara": { name: "Ground Chakkara", content: "Spinning ground firecracker.", price: 80 },
-        "flower-parts": { name: "Flower Parts", content: "Flower-shaped firecracker.", price: 200 },
-        rockets: { name: "Rockets", content: "Sky-high rockets.", price: 250 },
-        pencils: { name: "Pencils", content: "Pencil firecrackers.", price: 90 },
-        "night-sky-cracker": { name: "Night Sky Cracker", content: "Nighttime fireworks.", price: 300 },
-        whistle: { name: "Whistle", content: "Whistling firecracker.", price: 70 },
-        // Add more firecrackers as needed
-    };
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyAZdEOLvUbpGuL4s2qYMETvKuU9FZjtDFM",
+    authDomain: "vsoftadmin-29f4f.firebaseapp.com",
+    projectId: "vsoftadmin-29f4f",
+    storageBucket: "vsoftadmin-29f4f.appspot.com",
+    messagingSenderId: "654111268361",
+    appId: "1:654111268361:web:18d69557a90a9c8599a2d8",
+    measurementId: "G-JKTCSL34SJ"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const Prices = () => {
     const [tableData, setTableData] = useState([]);
     const [selectedFirecracker, setSelectedFirecracker] = useState(null);
+    const [priceListData, setPriceListData] = useState({});
+    const [confirmationMessage, setConfirmationMessage] = useState("");
+    const navigate = useNavigate();
 
-    // Function to handle button clicks
+    // Fetch data from Firestore
+    useEffect(() => {
+        const fetchData = async () => {
+            const querySnapshot = await getDocs(collection(db, 'crackers'));
+            const data = {};
+            querySnapshot.forEach((doc) => {
+                const item = doc.data();
+                data[doc.id] = item;
+            });
+            setPriceListData(data);
+        };
+
+        fetchData();
+    }, []);
+
     const handleButtonClick = (type) => {
         const item = priceListData[type];
-        setSelectedFirecracker(type); // Set the selected firecracker type
-
-        setTableData((prevData) => [
-            ...prevData,
-            { ...item, qty: 1, amount: item.price } // Initialize quantity and amount
-        ]);
+        if (item) {
+            setSelectedFirecracker(type);
+            setTableData((prevData) => [
+                ...prevData,
+                { ...item, qty: 1, amount: item.price }
+            ]);
+        }
     };
 
-    // Function to update quantity and amount
     const handleQtyChange = (index, qty) => {
         const updatedData = [...tableData];
         updatedData[index].qty = qty;
-        updatedData[index].amount = updatedData[index].price * qty;
+        updatedData[index].amount = updatedData[index].actualPrice * qty;
         setTableData(updatedData);
     };
 
-    // Function to add to cart (placeholder)
-    const handleAddToCart = () => {
-        alert('All selected items added to cart!');
-        // Implement cart functionality here
+    // Add item to cart and show confirmation
+    const handleAddToCart = (item) => {
+        const totalAmount = item.actualPrice * item.qty; 
+
+        const cartItem = {
+            name: item.name,
+            amount: totalAmount,
+            qty: item.qty,
+            ...item
+        };
+
+        const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
+        existingCart.push(cartItem);
+        localStorage.setItem('cartData', JSON.stringify(existingCart));
+
+        setConfirmationMessage(`${item.name} added to cart!`);
+        setTimeout(() => setConfirmationMessage(""), 2000);
+    };
+
+    const handleProceedToCart = () => {
+       
+        navigate('/cart');
     };
 
     return (
         <div className="price-list">
             <h2>Price List</h2>
 
-            {/* Offers and Combos Section */}
             <div className="offers-combos">
                 <h3>Offers and Combos</h3>
                 <div className="offers-grid">
@@ -61,11 +99,9 @@ const Prices = () => {
                         <h4>Combo 2</h4>
                         <p>Details about Combo 2.</p>
                     </div>
-                    {/* Add more offers as needed */}
                 </div>
             </div>
 
-            {/* Buttons Section */}
             <div className="buttons-section">
                 <h3>Select Firecracker Type</h3>
                 <div className="button-container">
@@ -75,13 +111,14 @@ const Prices = () => {
                             className="firecracker-button"
                             onClick={() => handleButtonClick(type)}
                         >
-                            {priceListData[type].name}
+                            {type}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Price List Table */}
+            {confirmationMessage && <div className="confirmation">{confirmationMessage}</div>}
+
             <div className="price-table">
                 <h3>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>
                 <table>
@@ -90,37 +127,42 @@ const Prices = () => {
                             <th>Name</th>
                             <th>Content</th>
                             <th>Price</th>
+                            <th>Actual Price</th>
                             <th>Qty</th>
-                            <th>Amount</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {selectedFirecracker && tableData
-                            .filter(item => item.name === priceListData[selectedFirecracker].name) // Filter by selected firecracker
+                            .filter(item => item.name === priceListData[selectedFirecracker].name)
                             .map((item, index) => (
                                 <tr key={index}>
                                     <td>{item.name}</td>
                                     <td>{item.content}</td>
-                                    <td>{item.price}</td>
+                                    <td> ₹ {item.price}</td>
+                                    <td>
+                                        <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                            ₹ {item.price}
+                                        </span><br />
+                                        ₹ {item.actualPrice}
+                                    </td>
                                     <td>
                                         <input
                                             type="number"
                                             value={item.qty}
                                             min="1"
-                                            onChange={(e) => handleQtyChange(index, e.target.value)}
+                                            onChange={(e) => handleQtyChange(index, parseInt(e.target.value))}
                                         />
                                     </td>
-                                    <td>{item.amount}</td>
                                     <td>
-                                        <button className="add-to-cart">Add to Cart</button>
+                                        <button className="add-to-cart" onClick={() => handleAddToCart(item)}>Add to Cart</button>
                                     </td>
                                 </tr>
                             ))}
                     </tbody>
                 </table>
                 {selectedFirecracker && (
-                    <button id="cart-button" onClick={handleAddToCart}>Add All to Cart</button>
+                    <button id="cart-button" onClick={handleProceedToCart}>Proceed to Cart</button>
                 )}
             </div>
         </div>

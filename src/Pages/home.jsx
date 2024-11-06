@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
+import Card1 from './card1.jsx'
+import CardsRow from './card2.jsx'
+import CardsRows from './card3.jsx'
 import { AcmeLogo } from "./AcmeLogo.jsx";
 import { CgLogIn } from "react-icons/cg";
 import { IoCartOutline } from "react-icons/io5";
-import { useState } from "react";
-import './nav.css';
 import { PiWhatsappLogoDuotone } from "react-icons/pi";
 import { RiFacebookLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa";
@@ -12,15 +13,15 @@ import { IoLogoYoutube } from "react-icons/io5";
 import { BiPhoneCall } from "react-icons/bi";
 import { Link } from 'react-router-dom'; 
 import Footer from './footer';
-
+import crackermakeVideo from './images/crackermake.webm';
 import './home.css'; 
+import './nav.css';  
 
 function Home() {
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <div>
+    <div className='main'>
       <div className='navsmain'>
         <div className='div1'>
           <h4 className="heads">
@@ -29,6 +30,7 @@ function Home() {
             <a href="tel:9943870817" className="phone-number">9943870817</a>
           </h4>         
         </div>
+
         <div>
           <Navbar isBordered className="navbar"> 
             <NavbarContent className="navbar-columns"> 
@@ -39,16 +41,16 @@ function Home() {
 
               <NavbarContent className="navbar-links"> 
                 <NavbarItem>
-                  <Link to="/Prices" className="nav-link">Crackers</Link> {/* Replace href with to */}
+                  <Link to="/Prices" className="nav-link">Crackers</Link>
                 </NavbarItem>
                 <NavbarItem isActive>
-                  <Link to="/about" className="nav-link" aria-current="page">About</Link> {/* Replace href with to */}
+                  <Link to="/about" className="nav-link" aria-current="page">About</Link>
                 </NavbarItem>
                 <NavbarItem>
-                  <Link to="/gallery" className="nav-link">Gallery</Link> {/* Replace href with to */}
+                  <Link to="/gallery" className="nav-link">Gallery</Link>
                 </NavbarItem>
                 <NavbarItem>
-                  <Link to="/contact" className="nav-link">Contact</Link> {/* Replace href with to */}
+                  <Link to="/contact" className="nav-link">Contact</Link>
                 </NavbarItem>
               </NavbarContent>
 
@@ -65,6 +67,7 @@ function Home() {
             </NavbarContent>
           </Navbar>
         </div>
+
         <div className='divs2'>
           <ul className='socialIcons'>
             <li><a href="https://wa.me/yourwhatsapplink" target="_blank" rel="noopener noreferrer"><PiWhatsappLogoDuotone /></a></li>
@@ -74,8 +77,20 @@ function Home() {
           </ul>
         </div>
       </div>
+     
+      <div className="video-banner-container">
+      
+        <video autoPlay loop muted playsInline className="banner-video">
+          <source src={crackermakeVideo} type="video/webm" />
+        </video>
+        
+      </div>
 
-      <Footer />
+<div className='card1'> <Card1 /></div>
+<div className='card2'> <CardsRow /></div>
+<div className='card3'> <CardsRows /></div>
+
+ <Footer />   
     </div>
   );
 }

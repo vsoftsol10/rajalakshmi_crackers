@@ -1,0 +1,55 @@
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.card-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+}
+
+.card-container:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow effect on hover */
+}
+
+.card-container.clicked {
+  border: 3px solid yellow; /* Yellow border when clicked */
+}
+
+.image-container {
+  width: 100%;
+  height: 80%; 
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  transition: transform 0.3s ease;
+}
+
+.card-container:hover .card-image {
+  transform: scale(1.2);
+}
+
+.card-info {
+  text-align: center;
+  padding: 10px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: Red;
+  text-align: center;
+}

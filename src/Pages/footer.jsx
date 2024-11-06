@@ -43,8 +43,7 @@ export default function Footer() {
             <p><a href="#!" className="text-reset">Orders</a></p>
             <p><a href="#!" className="text-reset">Help</a></p>
         </MDBCol>
-
-        {/* Third Column - Contact Information */}
+        
         <MDBCol md="4" lg="3" className="mx-auto mb-md-0 mb-4">
             <h6 className="text-uppercase fw-bold mb-4">Contact</h6>
             <p><MDBIcon icon="home" className="me-2" /> Sivaksi, TN</p>
