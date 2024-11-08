@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
-import Card1 from './card1.jsx'
-import CardsRow from './card2.jsx'
-import CardsRows from './card3.jsx'
-import { AcmeLogo } from "./AcmeLogo.jsx";
 import { CgLogIn } from "react-icons/cg";
 import { IoCartOutline } from "react-icons/io5";
 import { PiWhatsappLogoDuotone } from "react-icons/pi";
@@ -11,14 +7,46 @@ import { RiFacebookLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa";
 import { IoLogoYoutube } from "react-icons/io5";
 import { BiPhoneCall } from "react-icons/bi";
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
+import Card1 from './card1.jsx';
+import CardsRow from './card2.jsx';
+import CardsRows from './card3.jsx';
+import Offers from './offers.jsx';
+
 import Footer from './footer';
 import crackermakeVideo from './images/crackermake.webm';
-import './home.css'; 
-import './nav.css';  
+import './home.css';
+import './nav.css';
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // state for mobile menu toggle
+
+  useEffect(() => {
+    const user = localStorage.getItem("loggedInUser");
+    if (user) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleCartClick = () => {
+    if (!isLoggedIn) {
+      setShowLoginPopup(true); // Show login prompt popup if not logged in
+    } else {
+      window.location.href = "/cart";
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen); // Toggle the mobile menu
+  };
 
   return (
     <div className='main'>
@@ -31,42 +59,53 @@ function Home() {
           </h4>         
         </div>
 
-        <div>
-          <Navbar isBordered className="navbar"> 
-            <NavbarContent className="navbar-columns"> 
-              <NavbarBrand className="navbar-brand"> 
-                <AcmeLogo />
-                <p className="hidden sm:block font-bold text-inherit">RajaLakshmi Crackers</p>
-              </NavbarBrand>
+        <Navbar isBordered className="navbar">
+          <NavbarContent className="navbar-columns">
+            <NavbarBrand className="navbar-brand">
+              <p className="hidden sm:block font-bold text-inherit">RajaLakshmi Crackers</p>
+            </NavbarBrand>
 
-              <NavbarContent className="navbar-links"> 
-                <NavbarItem>
-                  <Link to="/Prices" className="nav-link">Crackers</Link>
-                </NavbarItem>
-                <NavbarItem isActive>
-                  <Link to="/about" className="nav-link" aria-current="page">About</Link>
-                </NavbarItem>
-                <NavbarItem>
-                  <Link to="/gallery" className="nav-link">Gallery</Link>
-                </NavbarItem>
-                <NavbarItem>
-                  <Link to="/contact" className="nav-link">Contact</Link>
-                </NavbarItem>
-              </NavbarContent>
+            {/* Mobile view menu toggle */}
+            <div className="mobile-menu-icon" onClick={toggleMenu}>
+              <span className="hamburger-icon"></span>
+            </div>
 
-              <NavbarContent as="div" className="navbar-actions">
-                <NavbarContent as="div" className="users">
-                  <Link to="/login" className="icon-link">
-                    <CgLogIn />
-                  </Link>
-                  <Link to={isLoggedIn ? "/cart" : "/login"} className="icon-link">
-                    <IoCartOutline />
-                  </Link>
-                </NavbarContent>
-              </NavbarContent>
+            {/* Desktop menu */}
+            <NavbarContent className={`navbar-links ${menuOpen ? "open" : ""}`}>
+              <NavbarItem>
+                <Link to="/Prices" className="nav-link">Crackers</Link>
+              </NavbarItem>
+              <NavbarItem isActive>
+                <Link to="/about" className="nav-link" aria-current="page">About</Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link to="/gallery" className="nav-link">Gallery</Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link to="/contact" className="nav-link">Contact</Link>
+              </NavbarItem>
             </NavbarContent>
-          </Navbar>
-        </div>
+
+            <NavbarContent as="div" className="navbar-actions">
+              <div className="users">
+                {!isLoggedIn ? (
+                  <button className="icon-link">
+                    <Link to="/login">
+                      <CgLogIn /> Login
+                    </Link>
+                  </button>
+                ) : (
+                  <button className="icon-link" onClick={handleLogout}>
+                    Logout
+                  </button>
+                )}
+                <button className="icon-link" onClick={handleCartClick}>
+                  <IoCartOutline />
+                </button>
+              </div>
+            </NavbarContent>
+          </NavbarContent>
+        </Navbar>
 
         <div className='divs2'>
           <ul className='socialIcons'>
@@ -77,20 +116,28 @@ function Home() {
           </ul>
         </div>
       </div>
-     
+
       <div className="video-banner-container">
-      
         <video autoPlay loop muted playsInline className="banner-video">
           <source src={crackermakeVideo} type="video/webm" />
         </video>
-        
       </div>
 
-<div className='card1'> <Card1 /></div>
-<div className='card2'> <CardsRow /></div>
-<div className='card3'> <CardsRows /></div>
-
- <Footer />   
+      <div className='card1'> <Card1 /></div>
+      <div className='card2'> <CardsRow /></div>
+      <div className='h44'> <h4> New Arrivals</h4></div>
+      <div className='card3'> <CardsRows /></div>
+      <div className='offers'> <Offers /></div>
+      <div className='footer'><Footer /> </div>
+      
+      {showLoginPopup && (
+        <div className="login-popup">
+          <div className="popup-content">
+            <h4>RajaLakshmi says: Please login first to see your cart.</h4>
+            <button onClick={() => setShowLoginPopup(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

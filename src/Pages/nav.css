@@ -75,10 +75,55 @@
   
  
   
-
-  @media (max-width: 480px) {
-    .navbar-columns {
-      flex-direction: column; /* Stack items on small screens */
-    }
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 10;
   }
+  .navbar-links.open {
+    display: block;
+  }
+
+  /* Mobile menu icon */
+  .mobile-menu-icon {
+    display: block;
+    cursor: pointer;
+  }
+  
+  .hamburger-icon {
+    width: 30px;
+    height: 3px;
+    background-color: #333;
+    position: relative;
+    transition: 0.3s;
+  }
+  .hamburger-icon:before,
+  .hamburger-icon:after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background-color: #333;
+    transition: 0.3s;
+  }
+  .hamburger-icon:before {
+    top: -8px;
+  }
+  .hamburger-icon:after {
+    top: 8px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Show full navbar on desktop view */
+  .mobile-menu-icon {
+    display: none;
+  }
+}
   

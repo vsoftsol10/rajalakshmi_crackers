@@ -4,7 +4,12 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+.h44{
+    color: black;
+    font-size: 2rem;
+    text-align: center;
 
+}
 .video-banner-container {
     position: relative;
     width: 100%;
@@ -36,6 +41,14 @@
 
   }
 
+  .card3{
+    width: 100%;
+    height: 350px;
+    margin-top: 1rem;
+   
+
+  }
+
 .div1 {
     display: flex;
     align-items: center;
@@ -55,7 +68,7 @@
     align-items: center;
     white-space: nowrap;
     overflow: hidden;
-    animation: trainFlow 40s linear infinite;
+    animation: trainFlow 55s linear infinite; 
     gap: 1rem;
 }
 .headss  {
@@ -68,6 +81,16 @@
     overflow: hidden;
     
     gap: 1rem;
+}
+.offers{
+    width: 100%;
+    height: 500px;
+    margin-top: 2rem;
+
+
+}
+.footer{
+    margin-top: 3rem;
 }
 
 .phone-icon {
@@ -84,17 +107,7 @@
     color: lightyellow;
 }
 
-@keyframes trainFlow {
-    0% {
-        transform: translateX(-100%);
-    }
-    50% {
-        transform: translateX(0); 
-    }
-    100% {
-        transform: translateX(100%);
-    }
-}
+
 
 .heads:hover {
     animation-play-state: paused;
@@ -124,3 +137,73 @@
     text-decoration: none;
 }
 
+@keyframes trainFlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(0); 
+    }
+    100% {
+        transform: translateX(100%);
+    }
+  }
+  /* Mobile View */
+@media screen and (max-width: 500px) {
+   
+    .video-banner-container {
+        height: 300px;
+    }
+
+    /* Adjust card heights for smaller screens */
+    .card1 {
+        height: 150px;
+    }
+
+    .card2, .card3 {
+        height: 250px;
+    }
+
+    /* Adjust font size for headings */
+    .h44 {
+        font-size: 1.5rem;
+    }
+
+    /* Make heads text more compact and adjust size */
+    .heads, .headss {
+        font-size: 1rem;
+        top: 15%;
+        gap: 0.5rem;
+    }
+
+    /* Make the offers section more compact */
+    .offers {
+        height: 350px;
+        margin-top: 1rem;
+    }
+
+    /* Make social icons smaller */
+    .socialIcons a {
+        font-size: 24px;
+    }
+
+    /* Adjust phone number and icon size */
+    .phone-icon {
+        font-size: 20px;
+    }
+
+    .phone-number {
+        font-size: 18px;
+    }
+
+    /* Stack the flex containers vertically on small screens */
+    .div1, .div2 {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Adjust footer padding for mobile */
+    .footer {
+        padding: 1rem;
+    }
+}

@@ -3,62 +3,63 @@
     background-repeat: no-repeat;
     background-size: cover;
     color: #fff;
-    padding: 20px 0; 
+    padding: 20px 0;
 }
 
 .footer .socialIcons {
     display: flex;
-    justify-content: center; 
-    margin-bottom: 0px; }
+    justify-content: center;
+    margin-bottom: 10px; /* Add space below social icons for better separation */
+}
 
 .footer .socialIcons a {
     color: #fff;
     transition: color 0.3s;
-    font-size: 33px;
-    margin-right: 25px; /* Space between icons */
+    font-size: 28px; /* Adjust font size for smaller screens */
+    margin-right: 15px; /* Reduced space between icons */
 }
 
 .footer .socialIcons a:hover {
-    color: #db241e; 
+    color: #db241e;
 }
 
 .footer h6 {
     color: #ffeb3b;
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 .footer a {
-    color: #fff; 
-    text-decoration: none; 
+    color: #fff;
+    text-decoration: none;
 }
 
 .footer a:hover {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 .footer .text-center {
     margin-top: 20px;
-    background-color: rgba(0, 0, 0, 0.01); 
-    padding: 10px 0; 
+    background-color: rgba(0, 0, 0, 0.01);
+    padding: 10px 0;
 }
 
 .footer .row {
-    margin: 0; 
+    margin: 0;
 }
 
 .footer .mx-auto {
-    margin-top: 15px; 
+    margin-top: 15px;
 }
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr); 
-    gap: 20px; 
+    grid-template-columns: 1fr; /* Single column on small screens */
+    gap: 20px;
 }
 
 /* Center-align text in each column */
 .footer-col {
-    text-align: center; 
+    text-align: center;
 }
 
 /* Responsive grid adjustments */
@@ -68,32 +69,72 @@
     }
 }
 
-@media (max-width: 768px) {
+/* Mobile view specific styles */
+@media (max-width: 468px) {
+    .footer-grid {
+        grid-template-columns: repeat(1, 1fr); /* Three columns on larger screens */
+    }
     .footer {
-        padding: 20px; /* Reduced padding on smaller screens */
+        padding: 15px 10px; /* Reduced padding for mobile */
     }
 
     .footer .text-center {
-        font-size: 14px; /* Adjusted font size for smaller screens */
+        font-size: 14px; /* Adjusted font size for mobile screens */
     }
-}
 
-@media (min-width: 769px) {
     .footer h6 {
-        font-size: 1.25rem; /* Increased font size for headings on larger screens */
+        font-size: 1.2rem; /* Reduced font size for headers */
     }
-}
 
-/* Additional styling for spacing */
-.footer .d-flex {
-    justify-content: center; /* Center align for the first row */
-}
+    .footer .socialIcons a {
+        font-size: 26px; /* Reduced font size for icons */
+        margin-right: 10px; /* Smaller gap between icons */
+    }
 
-.footer .row .col-md-3,
-.footer .row .col-md-4 {
-    margin-bottom: 20px;
-}
+    /* First row: Social networks */
+    .footer .d-flex {
+        flex-direction: column; /* Stack social icons vertically on small screens */
+        align-items: center;
+        margin-bottom: 20px; /* Add space below the social icons section */
+    }
 
-.footer .row .col-lg-2 {
-    text-align: left; /* Align text to left in useful links */
+    .footer .me-5 {
+        display: none; /* Hide "Get connected with us on social networks" text on small screens */
+    }
+
+    /* Second row: Logo (RAJALAKSHMICRACKERS) */
+    .footer .footer-col h6 {
+        font-size: 1.2rem;
+        text-align: center; /* Center the text in the second row */
+        margin-top: 15px;
+    }
+
+    /* Third row: Useful Links */
+    .footer .footer-col p {
+        font-size: 14px; /* Adjust text size in links */
+        margin-bottom: 8px; /* Reduce space between links */
+    }
+
+    .footer .footer .row {
+        display: block; /* Stack columns vertically */
+    }
+
+    .footer .footer-col {
+        margin-bottom: 15px; /* Add space between footer columns */
+    }
+
+    /* Fourth row: Contact */
+    .footer .footer-col p {
+        font-size: 14px; /* Adjust text size */
+    }
+
+    .footer .footer-col p i {
+        margin-right: 10px; /* Space out icons and text */
+    }
+
+    /* Fifth row: Copyright */
+    .footer .text-center {
+        font-size: 12px;
+        margin-top: 20px;
+    }
 }

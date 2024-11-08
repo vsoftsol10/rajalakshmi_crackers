@@ -15,9 +15,15 @@ const Login = () => {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            localStorage.setItem("loggedInUser", nameOrMobile);
+            // Assuming there is only one matching user, we retrieve the first document
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data(); // Retrieve user data
+
+            // Save all user details in localStorage
+            localStorage.setItem("loggedInUser", JSON.stringify(userData));
+
             alert("Login successful!");
-            navigate("/");
+            navigate("/"); // Redirect to home or other page
         } else {
             alert("Invalid credentials");
         }
@@ -26,8 +32,18 @@ const Login = () => {
     return (
         <div>
             <h2>Login</h2>
-            <input type="text" placeholder="Name or Mobile" value={nameOrMobile} onChange={(e) => setNameOrMobile(e.target.value)} />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input 
+                type="text" 
+                placeholder="Name or Mobile" 
+                value={nameOrMobile} 
+                onChange={(e) => setNameOrMobile(e.target.value)} 
+            />
+            <input 
+                type="password" 
+                placeholder="Password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+            />
             <button onClick={handleLogin}>Login</button>
             <p>New User? <a href="/signuppage">Signup here</a></p>
         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import './Cart.css'; // Add your CSS for styling the cart
+import './Cart.css';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -32,7 +32,6 @@ const Cart = () => {
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem('cartData')) || [];
         setCartItems(storedCart);
-        // Calculate total amount
         const total = storedCart.reduce((acc, item) => acc + item.amount, 0);
         setTotalAmount(total);
     }, []);
@@ -50,28 +49,88 @@ const Cart = () => {
     };
 
     const handlePayment = async () => {
-        // Prepare delivery data
-        const deliveryData = {
-            items: cartItems.map(item => ({
-                name: item.name,
-                quantity: item.qty, // Assuming qty is stored in cart items
-                amount: item.amount
-            })),
-            totalAmount,
-            ...deliveryDetails,
-            paymentStatus: paymentMethod === 'cod' ? 'Payment on delivery' : 'Payment confirmed (online)',
-        };
-
         try {
-            // Store delivery details in Firestore
-            await addDoc(collection(db, 'deliveryDetails'), deliveryData);
-            console.log("Delivery details saved successfully!", deliveryData);
-            // Optionally clear the cart
-            localStorage.removeItem('cartData');
-            // Navigate to a success page or cart page
-            navigate('/success'); // Change this to your desired route
+            let paymentStatus = paymentMethod === 'cod' ? 'Pending (COD)' : 'Processing';
+            
+            if (paymentMethod === 'online') {
+                // Razorpay payment gateway configuration
+                const options = {
+                    key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Merchant Key
+                    amount: totalAmount * 100, // Amount in paise
+                    currency: "INR",
+                    name: "Vsoft Admin",
+                    description: "Payment for Cart Order",
+                    
+                    handler: async (response) => {
+                        // Payment successful, update the payment status
+                        paymentStatus = 'Done (Online)';
+
+                        // Prepare order data
+                        const orderData = {
+                            deliveryDetails,
+                            paymentMethod,
+                            paymentStatus,
+                            totalAmount,
+                            items: cartItems.map(item => ({
+                                name: item.name,
+                                qty: item.qty,
+                                amount: item.amount
+                            })),
+                            timestamp: new Date()
+                        };
+
+                        // Store order in Firestore
+                        await addDoc(collection(db, "deliveryDetails"), orderData);
+
+                        // Clear cart and navigate
+                        localStorage.removeItem('cartData');
+                        setCartItems([]);
+                        alert('Order placed successfully!');
+                        navigate('/');
+                    },
+                    prefill: {
+                        name: deliveryDetails.name,
+                        email: "", // Optionally collect email
+                        contact: deliveryDetails.phone
+                    },
+                    notes: {
+                        address: deliveryDetails.address
+                    },
+                    theme: {
+                        color: "#F37254"
+                    }
+                };
+
+                const razorpay = new window.Razorpay(options);
+                razorpay.open();
+            }
+            // If Cash on Delivery, just save the order without initiating Razorpay
+            else {
+                const orderData = {
+                    deliveryDetails,
+                    paymentMethod,
+                    paymentStatus,
+                    totalAmount,
+                    items: cartItems.map(item => ({
+                        name: item.name,
+                        qty: item.qty,
+                        amount: item.amount
+                    })),
+                    timestamp: new Date()
+                };
+
+                // Store order in Firestore
+                await addDoc(collection(db, "deliveryDetails"), orderData);
+
+                // Clear cart and navigate
+                localStorage.removeItem('cartData');
+                setCartItems([]);
+                alert('Order placed successfully!');
+                navigate('/');
+            }
         } catch (error) {
-            console.error("Error saving delivery details: ", error);
+            console.error("Error processing payment: ", error);
+            alert("Failed to process order.");
         }
     };
 
@@ -82,7 +141,7 @@ const Cart = () => {
             <ul>
                 {cartItems.map((item, index) => (
                     <li key={index}>
-                        {item.name} - ₹{item.amount} (Quantity: {item.qty})
+                        {item.name} (Quantity: {item.qty}) - ₹{item.amount}
                     </li>
                 ))}
             </ul>

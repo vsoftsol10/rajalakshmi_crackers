@@ -1,23 +1,27 @@
+import React, { Suspense, lazy } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './Pages/home';
 
-import PriceList from './Pages/Prices';
-import Cart from './Pages/Cart';
-import Sign  from './Pages/signuppage'
-import Logins from './Pages/Login';
+// Lazy load the components
+const Home = lazy(() => import('./Pages/home'));
+const PriceList = lazy(() => import('./Pages/Prices'));
+const Cart = lazy(() => import('./Pages/Cart'));
+const Sign = lazy(() => import('./Pages/signuppage'));
+const Logins = lazy(() => import('./Pages/Login'));
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Prices" element={<PriceList />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/login" element={<Logins />} />
-          <Route path="/signuppage" element={<Sign />} />
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Prices" element={<PriceList />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/login" element={<Logins />} />
+            <Route path="/signuppage" element={<Sign />} />
+          </Routes>
+        </Suspense>
       </Router>
     </div>
   );
