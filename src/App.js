@@ -8,6 +8,8 @@ const PriceList = lazy(() => import('./Pages/Prices'));
 const Cart = lazy(() => import('./Pages/Cart'));
 const Sign = lazy(() => import('./Pages/signuppage'));
 const Logins = lazy(() => import('./Pages/Login'));
+const About = lazy(()=>import('./Pages/about'));
+const Contact =lazy(()=>import('./Pages/contact'))
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Logins />} />
             <Route path="/signuppage" element={<Sign />} />
+            <Route path="/about" element={<About />} />
+            <Route path='/contact'  element={<Contact />}/>
           </Routes>
         </Suspense>
       </Router>

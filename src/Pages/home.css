@@ -10,6 +10,22 @@
     text-align: center;
 
 }
+.img {
+    position: sticky; 
+    left: 20%;
+    top: 40%;
+    width: 100px;
+    height: 150px;
+    transform: translate(-50%, -50%); /* centers it perfectly */
+}
+.imgs {
+    position: sticky; 
+    left: 30%;
+    top: 10%;
+    width: 100px;
+    height: 150px;
+    transform: translate(-50%, -50%); /* centers it perfectly */
+}
 .video-banner-container {
     position: relative;
     width: 100%;
@@ -148,14 +164,13 @@
         transform: translateX(100%);
     }
   }
-  /* Mobile View */
-@media screen and (max-width: 500px) {
-   
+  @media screen and (max-width: 500px) {
+    /* Adjust video banner height */
     .video-banner-container {
         height: 300px;
     }
 
-    /* Adjust card heights for smaller screens */
+    /* Responsive card sizes */
     .card1 {
         height: 150px;
     }
@@ -164,19 +179,30 @@
         height: 250px;
     }
 
-    /* Adjust font size for headings */
+    /* Center heading text and adjust font size */
     .h44 {
         font-size: 1.5rem;
+        text-align: center;
+        padding: 0.5rem;
     }
 
-    /* Make heads text more compact and adjust size */
+    /* Adjust .img and .imgs positioning and scaling */
+    .img, .imgs {
+        width: 80px;
+        height: 120px;
+        left: 50%;
+        top: 20%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Compact text and adjust font size for scrolling text */
     .heads, .headss {
         font-size: 1rem;
         top: 15%;
         gap: 0.5rem;
     }
 
-    /* Make the offers section more compact */
+    /* Compress offers section height */
     .offers {
         height: 350px;
         margin-top: 1rem;
@@ -187,7 +213,7 @@
         font-size: 24px;
     }
 
-    /* Adjust phone number and icon size */
+    /* Phone number and icon size adjustments */
     .phone-icon {
         font-size: 20px;
     }
@@ -196,14 +222,80 @@
         font-size: 18px;
     }
 
-    /* Stack the flex containers vertically on small screens */
+    /* Flex containers stack vertically for small screens */
     .div1, .div2 {
         flex-direction: column;
         align-items: center;
     }
 
-    /* Adjust footer padding for mobile */
+    /* Footer padding for mobile */
     .footer {
         padding: 1rem;
+        text-align: center;
+    }
+
+    /* Center elements in .divs2 for social icons */
+    .divs2 {
+        justify-content: center;
+        padding: 0.5rem 0;
+    }
+}
+/* Hide mobile menu button on desktop */
+.mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem; /* Icon size */
+    color: white;
+    padding: 10px;
+}
+
+/* Show mobile menu button only on small screens */
+@media screen and (max-width: 500px) {
+    .mobile-menu-icon {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        z-index: 10;
+    }
+
+    /* Style for open mobile menu covering the full screen */
+    .navbar-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Display menu links when open */
+    .navbar-links.open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Style individual nav links */
+    .navbar-links a {
+        color: white;
+        font-size: 1.5rem;
+        padding: 1rem;
+        text-decoration: none;
+    }
+
+    /* Hamburger icon style */
+    .hamburger-icon {
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        display: block;
+        margin: 5px 0;
     }
 }

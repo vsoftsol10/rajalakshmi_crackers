@@ -1,204 +1,211 @@
-import React, { useEffect, useState } from 'react';
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { useNavigate } from 'react-router-dom';
-import './Cart.css';
 
-// Firebase configuration
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { useNavigate } from 'react-router-dom';
+import './PriceList.css';
+import image1 from './images/offer1.webp';
+import image2 from './images/offer2.webp';
+import NavBar from './Navbar';
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAZdEOLvUbpGuL4s2qYMETvKuU9FZjtDFM",
-    authDomain: "vsoftadmin-29f4f.firebaseapp.com",
-    projectId: "vsoftadmin-29f4f",
-    storageBucket: "vsoftadmin-29f4f.appspot.com",
-    messagingSenderId: "654111268361",
-    appId: "1:654111268361:web:18d69557a90a9c8599a2d8",
-    measurementId: "G-JKTCSL34SJ"
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+    projectId: "YOUR_FIREBASE_PROJECT_ID",
+    storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+    appId: "YOUR_FIREBASE_APP_ID",
+    measurementId: "YOUR_FIREBASE_MEASUREMENT_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const Cart = () => {
-    const [cartItems, setCartItems] = useState([]);
-    const [totalAmount, setTotalAmount] = useState(0);
-    const [paymentMethod, setPaymentMethod] = useState('cod'); // default to Cash on Delivery
-    const [deliveryDetails, setDeliveryDetails] = useState({
-        name: '',
-        address: '',
-        phone: ''
-    });
+const Prices = () => {
+    const [tableData, setTableData] = useState([]);
+    const [selectedFirecracker, setSelectedFirecracker] = useState(null);
+    const [priceListData, setPriceListData] = useState({});
+    const [confirmationMessage, setConfirmationMessage] = useState("");
+    const [loginPromptMessage, setLoginPromptMessage] = useState("");
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        const storedCart = JSON.parse(localStorage.getItem('cartData')) || [];
-        setCartItems(storedCart);
-        const total = storedCart.reduce((acc, item) => acc + item.amount, 0);
-        setTotalAmount(total);
+        const fetchData = async () => {
+            const querySnapshot = await getDocs(collection(db, 'crackers'));
+            const data = {};
+            querySnapshot.forEach((doc) => {
+                const item = doc.data();
+                data[doc.id] = item;
+            });
+            setPriceListData(data);
+        };
+
+        fetchData();
     }, []);
 
-    const handlePaymentMethodChange = (event) => {
-        setPaymentMethod(event.target.value);
-    };
-
-    const handleDeliveryDetailsChange = (event) => {
-        const { name, value } = event.target;
-        setDeliveryDetails(prevDetails => ({
-            ...prevDetails,
-            [name]: value
-        }));
-    };
-
-    const handlePayment = async () => {
-        try {
-            let paymentStatus = paymentMethod === 'cod' ? 'Pending (COD)' : 'Processing';
-            
-            if (paymentMethod === 'online') {
-                // Razorpay payment gateway configuration
-                const options = {
-                    key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Merchant Key
-                    amount: totalAmount * 100, // Amount in paise
-                    currency: "INR",
-                    name: "Vsoft Admin",
-                    description: "Payment for Cart Order",
-                    
-                    handler: async (response) => {
-                        // Payment successful, update the payment status
-                        paymentStatus = 'Done (Online)';
-
-                        // Prepare order data
-                        const orderData = {
-                            deliveryDetails,
-                            paymentMethod,
-                            paymentStatus,
-                            totalAmount,
-                            items: cartItems.map(item => ({
-                                name: item.name,
-                                qty: item.qty,
-                                amount: item.amount
-                            })),
-                            timestamp: new Date()
-                        };
-
-                        // Store order in Firestore
-                        await addDoc(collection(db, "deliveryDetails"), orderData);
-
-                        // Clear cart and navigate
-                        localStorage.removeItem('cartData');
-                        setCartItems([]);
-                        alert('Order placed successfully!');
-                        navigate('/');
-                    },
-                    prefill: {
-                        name: deliveryDetails.name,
-                        email: "", // Optionally collect email
-                        contact: deliveryDetails.phone
-                    },
-                    notes: {
-                        address: deliveryDetails.address
-                    },
-                    theme: {
-                        color: "#F37254"
-                    }
-                };
-
-                const razorpay = new window.Razorpay(options);
-                razorpay.open();
-            }
-            // If Cash on Delivery, just save the order without initiating Razorpay
-            else {
-                const orderData = {
-                    deliveryDetails,
-                    paymentMethod,
-                    paymentStatus,
-                    totalAmount,
-                    items: cartItems.map(item => ({
-                        name: item.name,
-                        qty: item.qty,
-                        amount: item.amount
-                    })),
-                    timestamp: new Date()
-                };
-
-                // Store order in Firestore
-                await addDoc(collection(db, "deliveryDetails"), orderData);
-
-                // Clear cart and navigate
-                localStorage.removeItem('cartData');
-                setCartItems([]);
-                alert('Order placed successfully!');
-                navigate('/');
-            }
-        } catch (error) {
-            console.error("Error processing payment: ", error);
-            alert("Failed to process order.");
+    const handleButtonClick = (type) => {
+        const item = priceListData[type];
+        if (item) {
+            setSelectedFirecracker(type);
+            setTableData((prevData) => [
+                ...prevData,
+                { ...item, qty: 1, amount: item.price }
+            ]);
         }
     };
 
+    useEffect(() => {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+          setIsLoggedIn(true);
+        }
+    }, []);
+    
+    const handleLogout = () => {
+        localStorage.removeItem("loggedInUser");
+        setIsLoggedIn(false);
+        window.location.href = "/";
+    };
+
+    const handleQtyChange = (index, qty) => {
+        const updatedData = [...tableData];
+        updatedData[index].qty = qty;
+        updatedData[index].amount = updatedData[index].actualPrice * qty;
+        setTableData(updatedData);
+    };
+
+    const handleAddToCart = (item) => {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData) {
+            const totalAmount = item.actualPrice * item.qty; 
+            const cartItem = { name: item.name, amount: totalAmount, qty: item.qty, ...item };
+            const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
+            existingCart.push(cartItem);
+            localStorage.setItem('cartData', JSON.stringify(existingCart));
+            setConfirmationMessage(`${item.name} added to cart!`);
+            setTimeout(() => setConfirmationMessage(""), 2000);
+        } else {
+            setLoginPromptMessage("Please log in to add items to the cart.");
+            setTimeout(() => setLoginPromptMessage(""), 3000);
+        }
+    };
+
+    const handleProceedToCart = () => {
+        navigate('/cart');
+    };
+
+    const handleRazorpayPayment = (amount, offerName) => {
+        const options = {
+            key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Key
+            amount: amount * 100, // Amount in paise
+            currency: "INR",
+            name: "Vsoft Solutions",
+            description: `Payment for ${offerName}`,
+            handler: function (response) {
+                alert(`Payment successful for ${offerName}! Payment ID: ${response.razorpay_payment_id}`);
+            },
+            prefill: {
+                name: "Your Name",
+                email: "your.email@example.com",
+                contact: "1234567890",
+            },
+            theme: {
+                color: "#3399cc",
+            },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+    };
+
     return (
-        <div className="cart">
-            <h2>Cart</h2>
-            <h3>Products:</h3>
-            <ul>
-                {cartItems.map((item, index) => (
-                    <li key={index}>
-                        {item.name} (Quantity: {item.qty}) - ₹{item.amount}
-                    </li>
-                ))}
-            </ul>
-            <h3>Total Amount: ₹{totalAmount}</h3>
+        <div className="price-list">
+            <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
+            <h2>Price List</h2>
 
-            <h3>Delivery Details</h3>
-            <form onSubmit={e => e.preventDefault()}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Your Name"
-                    value={deliveryDetails.name}
-                    onChange={handleDeliveryDetailsChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="address"
-                    placeholder="Delivery Address"
-                    value={deliveryDetails.address}
-                    onChange={handleDeliveryDetailsChange}
-                    required
-                />
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone Number"
-                    value={deliveryDetails.phone}
-                    onChange={handleDeliveryDetailsChange}
-                    required
-                />
-
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            value="cod"
-                            checked={paymentMethod === 'cod'}
-                            onChange={handlePaymentMethodChange}
-                        />
-                        Cash on Delivery
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            value="online"
-                            checked={paymentMethod === 'online'}
-                            onChange={handlePaymentMethodChange}
-                        />
-                        Pay Online (Razorpay)
-                    </label>
+            <div className="offers-combos">
+                <h3>Offers and Combos</h3>
+                <div className="offers-grid">
+                    <div className="offer" onClick={() => handleRazorpayPayment(4000, 'Combo 1')}>
+                        <img src={image1} alt="Offer 1" />
+                        <h4>Combo 1</h4>
+                        <p>Price : ₹4000</p>
+                    </div>
+                    <div className="offer" onClick={() => handleRazorpayPayment(3000, 'Combo 2')}>
+                        <img src={image2} alt="Offer 2" />
+                        <h4>Combo 2</h4>
+                        <p>Price : ₹3000</p>
+                    </div>
                 </div>
+            </div>
 
-                <button type="button" onClick={handlePayment}>Pay Now</button>
-            </form>
+            <div className="buttons-section">
+                <h3>Select Firecracker Type</h3>
+                <div className="button-container">
+                    {Object.keys(priceListData).map((type) => (
+                        <button
+                            key={type}
+                            className="firecracker-button"
+                            onClick={() => handleButtonClick(type)}
+                        >
+                            {type}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {confirmationMessage && <div className="confirmation">{confirmationMessage}</div>}
+            {loginPromptMessage && <div className="login-prompt">{loginPromptMessage}</div>}
+
+            <div className="price-table">
+                <h3>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Content</th>
+                            <th>Price</th>
+                            <th>Actual Price</th>
+                            <th>Qty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedFirecracker && tableData
+                            .filter(item => item.name === priceListData[selectedFirecracker].name)
+                            .map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.name}</td>
+                                    <td>{item.content}</td>
+                                    <td> ₹ {item.price}</td>
+                                    <td>
+                                        <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                            ₹ {item.price}
+                                        </span><br />
+                                        ₹ {item.actualPrice}
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            value={item.qty}
+                                            min="1"
+                                            onChange={(e) => handleQtyChange(index, parseInt(e.target.value))}
+                                        />
+                                    </td>
+                                    <td>
+                                        <button className="add-to-cart" onClick={() => handleAddToCart(item)}>Add to Cart</button>
+                                    </td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+                {selectedFirecracker && (
+                    <button id="cart-button" onClick={handleProceedToCart}>Proceed to Cart</button>
+                )}
+            </div>
         </div>
     );
 };
 
-export default Cart;
+export default Prices;

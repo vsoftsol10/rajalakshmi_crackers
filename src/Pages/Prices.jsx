@@ -3,8 +3,10 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import './PriceList.css';
+import image1 from './images/offer1.webp';
+import image2 from './images/offer2.webp';
+import NavBar from './Navbar';
 
-// Initialize Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyAZdEOLvUbpGuL4s2qYMETvKuU9FZjtDFM",
     authDomain: "vsoftadmin-29f4f.firebaseapp.com",
@@ -23,7 +25,10 @@ const Prices = () => {
     const [selectedFirecracker, setSelectedFirecracker] = useState(null);
     const [priceListData, setPriceListData] = useState({});
     const [confirmationMessage, setConfirmationMessage] = useState("");
+    const [loginPromptMessage, setLoginPromptMessage] = useState("");
     const navigate = useNavigate();
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // Fetch data from Firestore
     useEffect(() => {
@@ -50,7 +55,18 @@ const Prices = () => {
             ]);
         }
     };
-
+    useEffect(() => {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+          setIsLoggedIn(true);
+        }
+      }, []);
+    
+      const handleLogout = () => {
+        localStorage.removeItem("loggedInUser");
+        setIsLoggedIn(false);
+        window.location.href = "/";
+      };
     const handleQtyChange = (index, qty) => {
         const updatedData = [...tableData];
         updatedData[index].qty = qty;
@@ -60,44 +76,79 @@ const Prices = () => {
 
     // Add item to cart and show confirmation
     const handleAddToCart = (item) => {
-        const totalAmount = item.actualPrice * item.qty; 
+        const userData = JSON.parse(localStorage.getItem('userData')); // Check if user is logged in
 
-        const cartItem = {
-            name: item.name,
-            amount: totalAmount,
-            qty: item.qty,
-            ...item
-        };
+        if (userData) { // If user is logged in
+            const totalAmount = item.actualPrice * item.qty; 
 
-        const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
-        existingCart.push(cartItem);
-        localStorage.setItem('cartData', JSON.stringify(existingCart));
+            const cartItem = {
+                name: item.name,
+                amount: totalAmount,
+                qty: item.qty,
+                ...item
+            };
 
-        setConfirmationMessage(`${item.name} added to cart!`);
-        setTimeout(() => setConfirmationMessage(""), 2000);
+            const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
+            existingCart.push(cartItem);
+            localStorage.setItem('cartData', JSON.stringify(existingCart));
+
+            setConfirmationMessage(`${item.name} added to cart!`);
+            setTimeout(() => setConfirmationMessage(""), 2000);
+        } else { // If user is not logged in
+            setLoginPromptMessage("Please log in to add items to the cart.");
+            setTimeout(() => setLoginPromptMessage(""), 3000);
+        }
     };
 
     const handleProceedToCart = () => {
-       
         navigate('/cart');
     };
+    const handleRazorpayPayment = (amount, offerName) => {
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        const userMobile = loggedInUser?.mobile || "0000000000";
+        const userName = loggedInUser?.name || "Guest";
+    
+        const options = {
+            key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Key
+            amount: amount * 100, // Amount in paise
+            currency: "INR",
+            name: "Vsoft Solutions",
+            description: `Payment for ${offerName}`,
+            handler: function (response) {
+                alert(`Payment successful for ${offerName}! Payment ID: ${response.razorpay_payment_id}`);
+            },
+            prefill: {
+                name: userName,
+                contact: userMobile,
+            },
+            theme: {
+                color: "#3399cc",
+            },
+        };
+    
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+    };
+    
 
     return (
         <div className="price-list">
+            <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
             <h2>Price List</h2>
 
+           
             <div className="offers-combos">
                 <h3>Offers and Combos</h3>
                 <div className="offers-grid">
-                    <div className="offer">
-                        <img src="./images/offer1.png" alt="Offer 1" />
+                    <div className="offer" onClick={() => handleRazorpayPayment(4000, 'Combo 1')}>
+                        <img src={image1} alt="Offer 1" />
                         <h4>Combo 1</h4>
-                        <p>Details about Combo 1.</p>
+                        <p>Price : ₹4000</p>
                     </div>
-                    <div className="offer">
-                        <img src="./images/offer2.png" alt="Offer 2" />
+                    <div className="offer" onClick={() => handleRazorpayPayment(3000, 'Combo 2')}>
+                        <img src={image2} alt="Offer 2" />
                         <h4>Combo 2</h4>
-                        <p>Details about Combo 2.</p>
+                        <p>Price : ₹3000</p>
                     </div>
                 </div>
             </div>
@@ -118,6 +169,7 @@ const Prices = () => {
             </div>
 
             {confirmationMessage && <div className="confirmation">{confirmationMessage}</div>}
+            {loginPromptMessage && <div className="login-prompt">{loginPromptMessage}</div>}
 
             <div className="price-table">
                 <h3>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>

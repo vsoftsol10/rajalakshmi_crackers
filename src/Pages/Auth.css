@@ -1,0 +1,92 @@
+/* General styles for the login container */
+.logins {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Heading style */
+  .h2l {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Input field styles */
+  input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  input:focus {
+    border: 2px solid #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Password input specific styling */
+  .il {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Button style */
+  .bl {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 400px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .bl:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Link styling for signup */
+  .p. {
+    margin-top: 10px;
+  }
+  
+  .al {
+    color: #00b5e2;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .al:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .logins {
+      padding: 20px;
+    }
+  
+    .h2l {
+      font-size: 28px;
+    }
+  
+    input, .bl {
+      width: 90%;
+    }
+  }
+  

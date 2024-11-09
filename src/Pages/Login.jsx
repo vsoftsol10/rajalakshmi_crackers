@@ -23,29 +23,29 @@ const Login = () => {
             localStorage.setItem("loggedInUser", JSON.stringify(userData));
 
             alert("Login successful!");
-            navigate("/"); // Redirect to home or other page
+            navigate("/"); 
         } else {
             alert("Invalid credentials");
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
+        <div className="logins">
+            <h2 className="h2l">Login</h2>
             <input 
                 type="text" 
                 placeholder="Name or Mobile" 
                 value={nameOrMobile} 
                 onChange={(e) => setNameOrMobile(e.target.value)} 
             />
-            <input 
+            <input  className="il"
                 type="password" 
                 placeholder="Password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
             />
-            <button onClick={handleLogin}>Login</button>
-            <p>New User? <a href="/signuppage">Signup here</a></p>
+            <button  className="bl"onClick={handleLogin}>Login</button>
+            <p className=" p.">New User? <a  href="/signuppage" className="al" >Signup here</a></p>
         </div>
     );
 };
