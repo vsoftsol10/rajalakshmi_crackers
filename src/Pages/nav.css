@@ -71,11 +71,29 @@
     color: inherit;
     cursor: pointer; 
 }
+.icon-link {
+  background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
+  color: white;         
+  border: none;        
+  padding: 10px 20px;    
+  border-radius: 5px;   
+  cursor: pointer;      
+  transition: background-color 0.3s ease; 
+}
+
+.icon-link:hover {
+  background-color: blue;
+  color: white;
+}
+
+.icon-link a {
+  color: white;
+  text-decoration: none;
+}
 
   
  
-  
-@media (max-width: 768px) {
+@media (max-width: 468px) {
   .navbar-links {
     display: none;
     flex-direction: column;
@@ -86,8 +104,9 @@
     background-color: white;
     z-index: 10;
   }
+  
   .navbar-links.open {
-    display: block;
+    display: flex;
   }
 
   /* Mobile menu icon */
@@ -103,6 +122,7 @@
     position: relative;
     transition: 0.3s;
   }
+
   .hamburger-icon:before,
   .hamburger-icon:after {
     content: '';
@@ -112,18 +132,34 @@
     background-color: #333;
     transition: 0.3s;
   }
+
   .hamburger-icon:before {
     top: -8px;
   }
+
   .hamburger-icon:after {
     top: 8px;
   }
+
+  /* Menu icon changes when open */
+  .mobile-menu-icon.open .hamburger-icon {
+    background-color: transparent;
+  }
+
+  .mobile-menu-icon.open .hamburger-icon:before {
+    transform: rotate(45deg);
+    top: 0;
+  }
+
+  .mobile-menu-icon.open .hamburger-icon:after {
+    transform: rotate(-45deg);
+    top: 0;
+  }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 469px) {
   /* Show full navbar on desktop view */
   .mobile-menu-icon {
     display: none;
   }
 }
-  

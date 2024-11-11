@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from './Navbar';
 import './About.css';
+import rocketImage from './images/rocket.gif';
+import gifd from './images/gifd.gif'
 import aboutImage from './images/aboutImage.webp';
 import founderImage from './images/founderImage.webp';
 import Footer from './footer';
@@ -42,7 +44,9 @@ function About() {
             Inspired by a passion for craftsmanship and community, our founder established RajaLakshmi Crackers to bring joy to celebrations across India. Today, we continue that legacy, focusing on quality, safety, and customer satisfaction.
           </p>
         </div>
-       
+        <div className='ig'><img src={rocketImage} alt="Rocket" /></div>
+        <div className='igd'><img src={gifd} alt="Rocket" /></div>
+        
       </section>
       <section className="about-content">
   <h2>Our Story</h2>

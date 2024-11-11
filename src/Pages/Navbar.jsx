@@ -1,5 +1,4 @@
-// NavbarComponent.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/react";
 import { CgLogIn } from "react-icons/cg";
 import { IoCartOutline } from "react-icons/io5";
@@ -8,15 +7,17 @@ import { RiFacebookLine } from "react-icons/ri";
 import { FaInstagram } from "react-icons/fa";
 import { IoLogoYoutube } from "react-icons/io5";
 import { BiPhoneCall } from "react-icons/bi";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './nav.css';
 
-function NavbarComponent({ isLoggedIn, handleCartClick, handleLogout }) {
+function NavbarComponent({ isLoggedIn, handleLogout,handleCartClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
 
   return (
     <div className='navsmain'>
@@ -34,13 +35,16 @@ function NavbarComponent({ isLoggedIn, handleCartClick, handleLogout }) {
             <p className="hidden sm:block font-bold text-inherit">RajaLakshmi Crackers</p>
           </NavbarBrand>
 
-          <div className={`mobile-menu-icon ${menuOpen ? 'open' : ''}`} onClick={toggleMenu}>
+          <div 
+            className={`mobile-menu-icon ${menuOpen ? 'open' : ''}`} 
+            onClick={toggleMenu}
+          >
             <span className="hamburger-icon"></span>
           </div>
 
           {/* Desktop menu */}
           <NavbarContent className={`navbar-links ${menuOpen ? "open" : ""}`}>
-          <NavbarItem>
+            <NavbarItem>
               <Link to="/" className="nav-link">Home</Link>
             </NavbarItem>
             <NavbarItem>

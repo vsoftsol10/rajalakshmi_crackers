@@ -1,211 +1,331 @@
-
-import React, { useState, useEffect } from 'react';
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from 'react';
+import { initializeApp, getApp, getApps } from "firebase/app";
+import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import './PriceList.css';
-import image1 from './images/offer1.webp';
-import image2 from './images/offer2.webp';
-import NavBar from './Navbar';
+import NavbarComponent from './Navbar.jsx';
+import './Cart.css';
 
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-    projectId: "YOUR_FIREBASE_PROJECT_ID",
-    storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-    appId: "YOUR_FIREBASE_APP_ID",
-    measurementId: "YOUR_FIREBASE_MEASUREMENT_ID"
+    apiKey: "AIzaSyAZdEOLvUbpGuL4s2qYMETvKuU9FZjtDFM",
+    authDomain: "vsoftadmin-29f4f.firebaseapp.com",
+    projectId: "vsoftadmin-29f4f",
+    storageBucket: "vsoftadmin-29f.appspot.com",
+    messagingSenderId: "654111268361",
+    appId: "1:654111268361:web:18d69557a90a9c8599a2d8",
+    measurementId: "G-JKTCSL34SJ"
 };
-
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
-const Prices = () => {
-    const [tableData, setTableData] = useState([]);
-    const [selectedFirecracker, setSelectedFirecracker] = useState(null);
-    const [priceListData, setPriceListData] = useState({});
-    const [confirmationMessage, setConfirmationMessage] = useState("");
-    const [loginPromptMessage, setLoginPromptMessage] = useState("");
-    const navigate = useNavigate();
+const Cart = () => {
+    const [cartItems, setCartItems] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [emiOption, setEmiOption] = useState(false);
+    const [deliveryDetails, setDeliveryDetails] = useState({
+        name: '',
+        address: '',
+        phone: ''
+    });
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    // Get logged-in user from localStorage
+    const storedUser = JSON.parse(localStorage.getItem('loggedInUser')) || {};
 
     useEffect(() => {
-        const fetchData = async () => {
-            const querySnapshot = await getDocs(collection(db, 'crackers'));
-            const data = {};
-            querySnapshot.forEach((doc) => {
-                const item = doc.data();
-                data[doc.id] = item;
-            });
-            setPriceListData(data);
-        };
+        if (storedUser.name && storedUser.mobile) {
+            const fetchCartItems = async () => {
+                const { name: userName, mobile: userMobile } = storedUser;
 
-        fetchData();
-    }, []);
+                console.log("Fetching cart for user:", userName, userMobile);
 
-    const handleButtonClick = (type) => {
-        const item = priceListData[type];
-        if (item) {
-            setSelectedFirecracker(type);
-            setTableData((prevData) => [
-                ...prevData,
-                { ...item, qty: 1, amount: item.price }
-            ]);
+                const cartQuery = query(
+                    collection(db, "Cart"),
+                    where("userName", "==", userName),
+                    where("userMobile", "==", userMobile)
+                );
+
+                const querySnapshot = await getDocs(cartQuery);
+                if (querySnapshot.empty) {
+                    console.log("No cart items found.");
+                    setCartItems([]);
+                    setTotalAmount(0);
+                    return;
+                }
+
+                let items = [];
+                let total = 0;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.items) {
+                        items = [...items, ...data.items];
+                        total += data.items.reduce((acc, item) => acc + item.amount, 0);
+                    }
+                });
+
+                console.log("Items fetched:", items);
+                console.log("Total amount:", total);
+
+                setCartItems(items);
+                setTotalAmount(total);
+            };
+
+            fetchCartItems();
         }
-    };
+    }, [storedUser, db]);
 
     useEffect(() => {
         const user = localStorage.getItem("loggedInUser");
         if (user) {
-          setIsLoggedIn(true);
+            setIsLoggedIn(true);
         }
     }, []);
-    
+
+    const handlePaymentMethodChange = (event) => {
+        setPaymentMethod(event.target.value);
+    };
+
+    const handleEmiOptionChange = () => {
+        setEmiOption(!emiOption);
+    };
+
+    const handleDeliveryDetailsChange = (event) => {
+        const { name, value } = event.target;
+        setDeliveryDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: value
+        }));
+    };
+
+    const clearUserCart = async () => {
+        if (!storedUser.name || !storedUser.mobile) {
+            console.error("User details are missing or invalid.");
+            return;
+        }
+
+        try {
+            const cartQuery = query(
+                collection(db, "Cart"),
+                where("userName", "==", storedUser.name),
+                where("userMobile", "==", storedUser.mobile)
+            );
+
+            const querySnapshot = await getDocs(cartQuery);
+
+            if (querySnapshot.empty) {
+                console.log("No cart document found for this user.");
+                return;
+            }
+
+            querySnapshot.forEach(async (docSnap) => {
+                await deleteDoc(doc(db, "Cart", docSnap.id));
+                console.log(`Deleted cart document with ID: ${docSnap.id}`);
+            });
+        } catch (error) {
+            console.error("Error deleting cart document:", error);
+        }
+    };
+
+    const handlePayment = async () => {
+        try {
+            let paymentStatus = paymentMethod === 'cod' ? 'Pending (COD)' : 'Processing';
+            let emiStatus = emiOption ? 'EMI selected' : 'No EMI';
+
+            if (paymentMethod === 'online') {
+                const options = {
+                    key: "rzp_test_DS4vEwjrMesmsa",
+                    amount: totalAmount * 100,
+                    currency: "INR",
+                    name: "Vsoft Admin",
+                    description: "Payment for Cart Order",
+                    handler: async (response) => {
+                        paymentStatus = 'Done (Online)';
+
+                        const orderData = {
+                            deliveryDetails,
+                            paymentMethod,
+                            emiStatus,
+                            paymentStatus,
+                            totalAmount,
+                            items: cartItems.map(item => ({
+                                name: item.name,
+                                qty: item.qty,
+                                amount: item.amount
+                            })),
+                            timestamp: new Date()
+                        };
+
+                        await addDoc(collection(db, "deliveryDetails"), orderData);
+                        if (emiOption) {
+                            const emiDetails = {
+                                totalAmount,
+                                firstPayment: totalAmount * 0.2,
+                                emiStatus: 'EMI Payment',
+                                timestamp: new Date()
+                            };
+                            await addDoc(collection(db, "emiDetails"), emiDetails);
+                        }
+
+                        await clearUserCart();
+                        localStorage.removeItem('cartData');
+                        setCartItems([]);
+                        setConfirmationMessage('Order placed successfully!');
+                        setShowPopup(true);
+                        setTimeout(() => {
+                            setShowPopup(false);
+                            setConfirmationMessage('');
+                            navigate('/');
+                        }, 2000);
+                    },
+                    prefill: {
+                        name: deliveryDetails.name,
+                        contact: deliveryDetails.phone
+                    },
+                    notes: {
+                        address: deliveryDetails.address
+                    },
+                    theme: {
+                        color: "#F37254"
+                    }
+                };
+
+                const razorpay = new window.Razorpay(options);
+                razorpay.open();
+            } else {
+                const orderData = {
+                    deliveryDetails,
+                    paymentMethod,
+                    emiStatus,
+                    paymentStatus,
+                    totalAmount,
+                    items: cartItems.map(item => ({
+                        name: item.name,
+                        qty: item.qty,
+                        amount: item.amount
+                    })),
+                    timestamp: new Date()
+                };
+
+                await addDoc(collection(db, "deliveryDetails"), orderData);
+                if (emiOption) {
+                    const emiDetails = {
+                        totalAmount,
+                        firstPayment: totalAmount * 0.2,
+                        emiStatus: 'EMI Payment',
+                        timestamp: new Date()
+                    };
+                    await addDoc(collection(db, "emiDetails"), emiDetails);
+                }
+
+                await clearUserCart();
+                localStorage.removeItem('cartData');
+                setCartItems([]);
+                setConfirmationMessage('Order placed successfully!');
+                setShowPopup(true);
+                setTimeout(() => {
+                    setShowPopup(false);
+                    setConfirmationMessage('');
+                    navigate('/');
+                }, 2000);
+            }
+        } catch (error) {
+            console.error("Error processing payment: ", error);
+            alert("Failed to process order.");
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("loggedInUser");
         setIsLoggedIn(false);
         window.location.href = "/";
     };
 
-    const handleQtyChange = (index, qty) => {
-        const updatedData = [...tableData];
-        updatedData[index].qty = qty;
-        updatedData[index].amount = updatedData[index].actualPrice * qty;
-        setTableData(updatedData);
-    };
-
-    const handleAddToCart = (item) => {
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        if (userData) {
-            const totalAmount = item.actualPrice * item.qty; 
-            const cartItem = { name: item.name, amount: totalAmount, qty: item.qty, ...item };
-            const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
-            existingCart.push(cartItem);
-            localStorage.setItem('cartData', JSON.stringify(existingCart));
-            setConfirmationMessage(`${item.name} added to cart!`);
-            setTimeout(() => setConfirmationMessage(""), 2000);
-        } else {
-            setLoginPromptMessage("Please log in to add items to the cart.");
-            setTimeout(() => setLoginPromptMessage(""), 3000);
-        }
-    };
-
-    const handleProceedToCart = () => {
-        navigate('/cart');
-    };
-
-    const handleRazorpayPayment = (amount, offerName) => {
-        const options = {
-            key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Key
-            amount: amount * 100, // Amount in paise
-            currency: "INR",
-            name: "Vsoft Solutions",
-            description: `Payment for ${offerName}`,
-            handler: function (response) {
-                alert(`Payment successful for ${offerName}! Payment ID: ${response.razorpay_payment_id}`);
-            },
-            prefill: {
-                name: "Your Name",
-                email: "your.email@example.com",
-                contact: "1234567890",
-            },
-            theme: {
-                color: "#3399cc",
-            },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-    };
-
     return (
-        <div className="price-list">
-            <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
-            <h2>Price List</h2>
-
-            <div className="offers-combos">
-                <h3>Offers and Combos</h3>
-                <div className="offers-grid">
-                    <div className="offer" onClick={() => handleRazorpayPayment(4000, 'Combo 1')}>
-                        <img src={image1} alt="Offer 1" />
-                        <h4>Combo 1</h4>
-                        <p>Price : ₹4000</p>
-                    </div>
-                    <div className="offer" onClick={() => handleRazorpayPayment(3000, 'Combo 2')}>
-                        <img src={image2} alt="Offer 2" />
-                        <h4>Combo 2</h4>
-                        <p>Price : ₹3000</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="buttons-section">
-                <h3>Select Firecracker Type</h3>
-                <div className="button-container">
-                    {Object.keys(priceListData).map((type) => (
-                        <button
-                            key={type}
-                            className="firecracker-button"
-                            onClick={() => handleButtonClick(type)}
-                        >
-                            {type}
-                        </button>
+        <div className='cart1'>
+            <NavbarComponent 
+                isLoggedIn={isLoggedIn} 
+                handleLogout={handleLogout} 
+            />
+            <div className="carts">
+                <h2 className='ch'>Cart For {storedUser.name}</h2>
+                <h3 className='ch3'>Products:</h3>
+                <ul className='uls'>
+                    {cartItems.map((item, index) => (
+                        <li key={index}>
+                            {item.name} (Quantity: {item.qty}) - ₹{item.amount}
+                        </li>
                     ))}
+                </ul>
+                <h3 className='ch3'>Total Amount: ₹{totalAmount}</h3>
+
+                <h3 className='ch3'>Delivery Details</h3>
+                <form onSubmit={e => e.preventDefault()} className='f3'>
+                    <input className='i'
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        value={deliveryDetails.name}
+                        onChange={handleDeliveryDetailsChange}
+                        required
+                    />
+                    <input className='i'
+                        type="text"
+                        name="address"
+                        placeholder="Delivery Address"
+                        value={deliveryDetails.address}
+                        onChange={handleDeliveryDetailsChange}
+                        required
+                    />
+                    <input className='i'
+                        type="text"
+                        name="phone"
+                        placeholder="Phone Number"
+                        value={deliveryDetails.phone}
+                        onChange={handleDeliveryDetailsChange}
+                        required
+                    />
+                </form>
+
+                <h3 className='ch3'>Payment Options</h3>
+                <div>
+                    <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={handlePaymentMethodChange}
+                    />
+                    Cash on Delivery
                 </div>
-            </div>
+                <div>
+                    <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="online"
+                        checked={paymentMethod === 'online'}
+                        onChange={handlePaymentMethodChange}
+                    />
+                    Online Payment (Razorpay)
+                </div>
 
-            {confirmationMessage && <div className="confirmation">{confirmationMessage}</div>}
-            {loginPromptMessage && <div className="login-prompt">{loginPromptMessage}</div>}
+                
 
-            <div className="price-table">
-                <h3>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Content</th>
-                            <th>Price</th>
-                            <th>Actual Price</th>
-                            <th>Qty</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {selectedFirecracker && tableData
-                            .filter(item => item.name === priceListData[selectedFirecracker].name)
-                            .map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.name}</td>
-                                    <td>{item.content}</td>
-                                    <td> ₹ {item.price}</td>
-                                    <td>
-                                        <span style={{ textDecoration: 'line-through', color: 'red' }}>
-                                            ₹ {item.price}
-                                        </span><br />
-                                        ₹ {item.actualPrice}
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="number"
-                                            value={item.qty}
-                                            min="1"
-                                            onChange={(e) => handleQtyChange(index, parseInt(e.target.value))}
-                                        />
-                                    </td>
-                                    <td>
-                                        <button className="add-to-cart" onClick={() => handleAddToCart(item)}>Add to Cart</button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
-                {selectedFirecracker && (
-                    <button id="cart-button" onClick={handleProceedToCart}>Proceed to Cart</button>
+                <button className='btn-cart' onClick={handlePayment}>
+                    Place Order
+                </button>
+
+                {showPopup && (
+                    <div className='popup'>
+                        <p>{confirmationMessage}</p>
+                    </div>
                 )}
             </div>
         </div>
     );
-};
+}
 
-export default Prices;
+export default Cart; 

@@ -5,6 +5,7 @@ import Footer from './footer';
 import image from './images/contact.webp'
 import './contact.css';
 import animation from './images/rss.gif';
+import gifd from './images/gifd.gif';
 const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
  
@@ -26,6 +27,7 @@ const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false
     <div >
         <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
         <div className='imgssd'><img src={animation} alt="anima" /></div>
+       
     <section className="contact-page">
       <h2>Contact Us</h2>
       <p>We'd love to hear from you! Reach out to us with any questions or concerns.</p>
@@ -40,14 +42,15 @@ const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false
         </div>
   
         <form className="contact-form">
-          <h3>Send Us a Message</h3>
-          <label>Name</label>
+        <h3 style={{ color: 'white' }}>Send Us a Message</h3>
+
+          <label  style={{ color: 'white' }} >Name</label>
           <input type="text" placeholder="Your Name" required />
   
-          <label>Email</label>
+          <label  style={{ color: 'white' }} >Email</label>
           <input type="email" placeholder="Your Email" required />
   
-          <label>Message</label>
+          <label  style={{ color: 'white' }} >Message</label>
           <textarea placeholder="Your Message" required></textarea>
   
           <button type="submit">Submit</button>

@@ -138,6 +138,20 @@
   display: flex;
   align-items: center;
 }
+.ig { 
+  position: sticky; 
+  right: 50%;
+  top: 10%;
+  width: 100px;
+  height: 150px;
+}
+.igd { 
+  position: sticky; 
+  right: 30%;
+  top: 10%;
+  width: 100px;
+  height: 250px;
+}
 
 .icon {
   color: red;

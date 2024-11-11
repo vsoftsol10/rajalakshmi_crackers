@@ -1,5 +1,5 @@
 .price-list {
-    padding: 20px;
+
     background-color: #f9f9f9;
 }
 
@@ -11,6 +11,14 @@
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+}
+.imgsss {
+    position: sticky; 
+    right: 10%;
+    top: 5%;
+    width: 100px;
+    height: 150px;
+  
 }
 
 .offer {

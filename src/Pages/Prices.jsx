@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { getFirestore, collection, addDoc, query, where, getDocs, doc, getDoc, updateDoc,setDoc } from "firebase/firestore";
+
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import animation from './images/rss.gif';
 import { useNavigate } from 'react-router-dom';
 import './PriceList.css';
 import image1 from './images/offer1.webp';
@@ -44,17 +46,21 @@ const Prices = () => {
 
         fetchData();
     }, []);
-
     const handleButtonClick = (type) => {
         const item = priceListData[type];
         if (item) {
             setSelectedFirecracker(type);
-            setTableData((prevData) => [
-                ...prevData,
-                { ...item, qty: 1, amount: item.price }
-            ]);
+          
+            const isItemAlreadyInTable = tableData.some(data => data.name === item.name);
+    
+            if (!isItemAlreadyInTable) {
+                // Clear the tableData and set the selected item
+                setTableData([{ ...item, qty: 1, amount: item.price }]);
+            }
         }
     };
+    
+    
     useEffect(() => {
         const user = localStorage.getItem("loggedInUser");
         if (user) {
@@ -67,41 +73,70 @@ const Prices = () => {
         setIsLoggedIn(false);
         window.location.href = "/";
       };
-    const handleQtyChange = (index, qty) => {
+      const handleQtyChange = (index, qty) => {
         const updatedData = [...tableData];
-        updatedData[index].qty = qty;
-        updatedData[index].amount = updatedData[index].actualPrice * qty;
+       
+        updatedData[index].qty = isNaN(qty) || qty < 0 ? 1 : qty;
+        updatedData[index].amount = updatedData[index].actualPrice * updatedData[index].qty;
         setTableData(updatedData);
     };
 
-    // Add item to cart and show confirmation
-    const handleAddToCart = (item) => {
-        const userData = JSON.parse(localStorage.getItem('userData')); // Check if user is logged in
 
-        if (userData) { // If user is logged in
-            const totalAmount = item.actualPrice * item.qty; 
-
+    const handleAddToCart = async (item) => {
+        const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+    
+        // Check if username and mobile number are available in local storage
+        if (userData && userData.name && userData.mobile) {
             const cartItem = {
-                name: item.name,
-                amount: totalAmount,
-                qty: item.qty,
-                ...item
+                ...item,
+                qty: item.qty || 1,
+                amount: item.actualPrice * (item.qty || 1),
+                userName: userData.name,
+                userMobile: userData.mobile,
             };
-
-            const existingCart = JSON.parse(localStorage.getItem('cartData')) || [];
-            existingCart.push(cartItem);
-            localStorage.setItem('cartData', JSON.stringify(existingCart));
-
-            setConfirmationMessage(`${item.name} added to cart!`);
-            setTimeout(() => setConfirmationMessage(""), 2000);
-        } else { // If user is not logged in
+    
+            try {
+                // Create a reference to the user's cart document using their userName and userMobile
+                const cartDocRef = doc(db, 'Cart', `${userData.name}_${userData.mobile}`);
+    
+                // Check if the cart document already exists
+                const docSnap = await getDoc(cartDocRef);
+    
+                if (docSnap.exists()) {
+                    // If document exists, update it by adding the new item
+                    const existingItems = docSnap.data().items || [];
+                    existingItems.push(cartItem);
+    
+                    // Update the document with the new items list
+                    await updateDoc(cartDocRef, { items: existingItems });
+                    setConfirmationMessage(`${item.name} added to cart!`);
+                } else {
+                    // If no document exists, create a new one with the current item
+                    await setDoc(cartDocRef, {
+                        userName: userData.name,
+                        userMobile: userData.mobile,
+                        items: [cartItem]
+                    });
+                    setConfirmationMessage(`${item.name} added to cart!` );
+                }
+    
+                // Hide the confirmation message after 2 seconds
+                setTimeout(() => setConfirmationMessage(""), 2000);
+            } catch (error) {
+                console.error("Error adding item to cart in Firestore: ", error);
+            }
+        } else {
+            // Prompt user to log in if username or mobile number is missing
             setLoginPromptMessage("Please log in to add items to the cart.");
             setTimeout(() => setLoginPromptMessage(""), 3000);
         }
     };
+    
+
 
     const handleProceedToCart = () => {
-        navigate('/cart');
+
+       navigate('/cart')
     };
     const handleRazorpayPayment = (amount, offerName) => {
         const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
@@ -133,28 +168,32 @@ const Prices = () => {
 
     return (
         <div className="price-list">
+            
             <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
-            <h2>Price List</h2>
+            <h2 style={{ color: 'black' }}>Price List</h2>
 
            
             <div className="offers-combos">
-                <h3>Offers and Combos</h3>
+            <h3 style={{ color: 'black' }}>Offers and Combos</h3>
+
                 <div className="offers-grid">
                     <div className="offer" onClick={() => handleRazorpayPayment(4000, 'Combo 1')}>
                         <img src={image1} alt="Offer 1" />
-                        <h4>Combo 1</h4>
-                        <p>Price : ₹4000</p>
+                        <h4 style={{ color: 'black' }}>Combo 1</h4>
+                        <p style={{ color: 'black' }}>Price : ₹4000</p>
                     </div>
                     <div className="offer" onClick={() => handleRazorpayPayment(3000, 'Combo 2')}>
                         <img src={image2} alt="Offer 2" />
-                        <h4>Combo 2</h4>
-                        <p>Price : ₹3000</p>
+                        <h4 style={{ color: 'black' }}>Combo 2</h4>
+                        <p style={{ color: 'black' }}>Price : ₹3000</p>
                     </div>
+                    <div className='imgsss'><img src={animation} alt="anima" /></div>
                 </div>
+                
             </div>
 
             <div className="buttons-section">
-                <h3>Select Firecracker Type</h3>
+                <h3 style={{ color: 'black' }}>Select Firecracker Type</h3>
                 <div className="button-container">
                     {Object.keys(priceListData).map((type) => (
                         <button
@@ -168,11 +207,11 @@ const Prices = () => {
                 </div>
             </div>
 
-            {confirmationMessage && <div className="confirmation">{confirmationMessage}</div>}
-            {loginPromptMessage && <div className="login-prompt">{loginPromptMessage}</div>}
+            {confirmationMessage && <div  style={{ color: 'black' }}>{confirmationMessage}</div>}
+            {loginPromptMessage && <div  style={{ color: 'black' }}>{loginPromptMessage}</div>}
 
             <div className="price-table">
-                <h3>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>
+                <h3  style={{ color: 'black'} }>{selectedFirecracker ? `Selected: ${priceListData[selectedFirecracker].name}` : "Selected Price List"}</h3>
                 <table>
                     <thead>
                         <tr>
@@ -189,9 +228,9 @@ const Prices = () => {
                             .filter(item => item.name === priceListData[selectedFirecracker].name)
                             .map((item, index) => (
                                 <tr key={index}>
-                                    <td>{item.name}</td>
-                                    <td>{item.content}</td>
-                                    <td> ₹ {item.price}</td>
+                                    <td style={{ color: 'black' }}>{item.name}</td>
+                                    <td style={{ color: 'black' }}>{item.content}</td>
+                                    <td style={{ color: 'black' }}> ₹ {item.price}</td>
                                     <td>
                                         <span style={{ textDecoration: 'line-through', color: 'red' }}>
                                             ₹ {item.price}
@@ -202,7 +241,7 @@ const Prices = () => {
                                         <input
                                             type="number"
                                             value={item.qty}
-                                            min="1"
+                                           min={0}
                                             onChange={(e) => handleQtyChange(index, parseInt(e.target.value))}
                                         />
                                     </td>

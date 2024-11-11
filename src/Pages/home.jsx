@@ -1,5 +1,5 @@
-// Home.jsx
 import React, { useState, useEffect } from 'react';
+import { gsap } from 'gsap';
 import NavbarComponent from './Navbar.jsx';
 import Card1 from './card1.jsx';
 import CardsRow from './card2.jsx';
@@ -20,6 +20,45 @@ function Home() {
     if (user) {
       setIsLoggedIn(true);
     }
+  }, []);
+
+  useEffect(() => {
+    // GSAP Scroll Animations for the cards
+    const handleScroll = () => {
+      // Select all card elements
+      const cards = document.querySelectorAll('.card1, .card2, .card3,.offers');
+
+      // Animate each card with GSAP as it enters the viewport
+      cards.forEach((card) => {
+        const cardPosition = card.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+
+        // If the card is in the viewport
+        if (cardPosition < windowHeight * 0.8) {
+          gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+        } else {
+          gsap.to(card, {
+            opacity: 0,
+            y: 100,
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+        }
+      });
+    };
+
+    // Add event listener for scroll
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const handleCartClick = () => {

@@ -12,10 +12,12 @@ const HoverCard = ({ title, backgroundImage, backgroundColor }) => {
   };
 
   return (
+    
     <div
       className={`card-container ${isClicked ? 'clicked' : ''}`}
       onClick={handleCardClick}
     >
+      
       <div className="image-container">
         <img src={backgroundImage} alt={title} className="card-image" />
       </div>
@@ -28,7 +30,11 @@ const HoverCard = ({ title, backgroundImage, backgroundColor }) => {
 
 const CardsRow = () => {
   return (
-    <div className="cards-row">
+    <div>
+      <h3 style={{ color: 'black'  , fontSize:'2rem'}}>Cracker Varities</h3>
+
+        <div className="cards-row">
+      
       <HoverCard
         title="Ear Boomers"
         backgroundImage={image1}
@@ -45,6 +51,8 @@ const CardsRow = () => {
         backgroundColor="#ff6347"
       />
     </div>
+    </div>
+  
   );
 };
 

@@ -8,6 +8,9 @@ const Login = () => {
     const [nameOrMobile, setNameOrMobile] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const backss = async () => {
+        window.history.back();
+    };
 
     const handleLogin = async () => {
         const userRef = collection(db, "userdetails");
@@ -31,7 +34,9 @@ const Login = () => {
 
     return (
         <div className="logins">
-            <h2 className="h2l">Login</h2>
+
+<div className="loginsss">
+<h2 className="h2l">Login</h2>
             <input 
                 type="text" 
                 placeholder="Name or Mobile" 
@@ -44,8 +49,12 @@ const Login = () => {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
             />
-            <button  className="bl"onClick={handleLogin}>Login</button>
+            <button  className="bl"onClick={handleLogin}>Login</button> 
+            <button  className="bl" onClick={backss} >Back</button> 
             <p className=" p.">New User? <a  href="/signuppage" className="al" >Signup here</a></p>
+            
+</div>
+  
         </div>
     );
 };

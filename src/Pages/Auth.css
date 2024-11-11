@@ -10,8 +10,17 @@
     background-position: center;
     color: white;
     font-family: Arial, sans-serif;
+  }.loginsss{
+    background-color: rgba(0, 0, 139, 0.85); 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  
+ 
   /* Heading style */
   .h2l {
     font-size: 36px;
@@ -42,26 +51,26 @@
     background-color: rgba(255, 255, 255, 0.8);
   }
   
-  /* Button style */
-  .bl {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    max-width: 400px;
-    transition: background-color 0.3s ease;
-  }
   
-  .bl:hover {
-    background-color: #0056b3;
-  }
+  .bl {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: red; /* Dark blue button background */
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.bl:hover {
+    background-color: #001f4d; /* Slightly darker blue on hover */
+}
   
   /* Link styling for signup */
-  .p. {
+  .p{
     margin-top: 10px;
   }
   

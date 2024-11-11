@@ -1,9 +1,8 @@
 .contact-page {
-    max-width: 1000px;
+    width: 1000px;
     margin: 0 auto;
-
     font-family: Arial, sans-serif;
-    background-color: antiquewhite;
+    background-color:white;
   }
   
   .contact-container {
@@ -26,6 +25,9 @@
     width: 100%;
     max-width: 200px;
     margin-bottom: 20px;
+  }
+  .contact-form{
+    background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
   }
   
   .contact-form label {
@@ -53,7 +55,7 @@
     margin-top: 15px;
     padding: 10px;
     width: 10rem;
-    background-color: #d9534f;
+    background-color: darkblue;
     color: white;
     border: none;
     border-radius: 5px;
