@@ -5,7 +5,7 @@ import Card1 from './card1.jsx';
 import CardsRow from './card2.jsx';
 import CardsRows from './card3.jsx';
 import Offers from './offers.jsx';
-import rocketImage from './images/rocket.gif';
+
 import animation from './images/rss.gif';
 import Footer from './footer';
 import crackermakeVideo from './images/crackermake.webm';
@@ -21,6 +21,22 @@ function Home() {
       setIsLoggedIn(true);
     }
   }, []);
+
+ 
+
+  const handleCartClick = () => {
+    if (!isLoggedIn) {
+      alert("Please log in to access the cart."); // Show login prompt popup if not logged in
+    } else {
+      window.location.href = "/cart";
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
 
   useEffect(() => {
     // GSAP Scroll Animations for the cards
@@ -60,20 +76,44 @@ function Home() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  useEffect(() => {
+    // GSAP Scroll Animations for the cards
+    const handleScroll = () => {
+      // Select all card elements
+      const cards = document.querySelectorAll('.card1, .card2, .card3,.offers');
 
-  const handleCartClick = () => {
-    if (!isLoggedIn) {
-      setShowLoginPopup(true); // Show login prompt popup if not logged in
-    } else {
-      window.location.href = "/cart";
-    }
-  };
+      // Animate each card with GSAP as it enters the viewport
+      cards.forEach((card) => {
+        const cardPosition = card.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
 
-  const handleLogout = () => {
-    localStorage.removeItem("loggedInUser");
-    setIsLoggedIn(false);
-    window.location.href = "/";
-  };
+        // If the card is in the viewport
+        if (cardPosition < windowHeight * 0.8) {
+          gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+        } else {
+          gsap.to(card, {
+            opacity: 0,
+            y: 100,
+            duration: 0.5,
+            ease: 'power2.out',
+          });
+        }
+      });
+    };
+
+    // Add event listener for scroll
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <div className='main'>
@@ -87,7 +127,7 @@ function Home() {
         <video autoPlay loop muted playsInline className="banner-video">
           <source src={crackermakeVideo} type="video/webm" />
         </video>
-        <div className='img'><img src={rocketImage} alt="Rocket" /></div>
+       
       </div>
 
       <div className='imgs'><img src={animation} alt="anima" /></div>

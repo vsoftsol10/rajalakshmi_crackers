@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
+import Footer from './footer';
 import NavbarComponent from './Navbar.jsx';
 import './Cart.css';
 
@@ -32,15 +33,12 @@ const Cart = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
 
-    // Get logged-in user from localStorage
     const storedUser = JSON.parse(localStorage.getItem('loggedInUser')) || {};
 
     useEffect(() => {
         if (storedUser.name && storedUser.mobile) {
             const fetchCartItems = async () => {
                 const { name: userName, mobile: userMobile } = storedUser;
-
-                console.log("Fetching cart for user:", userName, userMobile);
 
                 const cartQuery = query(
                     collection(db, "Cart"),
@@ -50,7 +48,6 @@ const Cart = () => {
 
                 const querySnapshot = await getDocs(cartQuery);
                 if (querySnapshot.empty) {
-                    console.log("No cart items found.");
                     setCartItems([]);
                     setTotalAmount(0);
                     return;
@@ -66,9 +63,6 @@ const Cart = () => {
                         total += data.items.reduce((acc, item) => acc + item.amount, 0);
                     }
                 });
-
-                console.log("Items fetched:", items);
-                console.log("Total amount:", total);
 
                 setCartItems(items);
                 setTotalAmount(total);
@@ -134,42 +128,62 @@ const Cart = () => {
         try {
             let paymentStatus = paymentMethod === 'cod' ? 'Pending (COD)' : 'Processing';
             let emiStatus = emiOption ? 'EMI selected' : 'No EMI';
-
+    
+            // Check if EMI option is valid for the order total
+            if (emiOption && totalAmount <= 6000) {
+                alert("EMI option is only available for orders greater than ₹6000.");
+                setEmiOption(false);
+                return;
+            }
+    
+            // If EMI is selected, calculate the first payment and balance
+            let firstPayment = emiOption ? totalAmount * 0.2 : totalAmount; // 20% of total if EMI, otherwise full amount
+            let balanceAmount = emiOption ? totalAmount - firstPayment : 0;
+            const emiDuration = emiOption ? (balanceAmount <= 10000 ? 3 : 6) : 0; // 3 or 6 months based on balance amount
+            let permontpay =    emiOption ? ( balanceAmount % 6) : 0;
+           
+    
+            // Common order data for Firestore
+            const orderData = {
+                deliveryDetails,
+                paymentMethod,
+                emiStatus,
+                paymentStatus,
+                totalAmount,
+                items: cartItems.map(item => ({
+                    name: item.name,
+                    qty: item.qty,
+                    amount: item.amount
+                })),
+                timestamp: new Date()
+            };
+    
+            // Handle online payment
             if (paymentMethod === 'online') {
                 const options = {
                     key: "rzp_test_DS4vEwjrMesmsa",
-                    amount: totalAmount * 100,
+                    amount: firstPayment * 100, // Charge only firstPayment if EMI, or totalAmount if no EMI
                     currency: "INR",
                     name: "Vsoft Admin",
                     description: "Payment for Cart Order",
                     handler: async (response) => {
                         paymentStatus = 'Done (Online)';
-
-                        const orderData = {
-                            deliveryDetails,
-                            paymentMethod,
-                            emiStatus,
-                            paymentStatus,
-                            totalAmount,
-                            items: cartItems.map(item => ({
-                                name: item.name,
-                                qty: item.qty,
-                                amount: item.amount
-                            })),
-                            timestamp: new Date()
-                        };
-
                         await addDoc(collection(db, "deliveryDetails"), orderData);
+    
+                        // Store EMI details if EMI is selected
                         if (emiOption) {
                             const emiDetails = {
                                 totalAmount,
-                                firstPayment: totalAmount * 0.2,
+                                firstPayment,
                                 emiStatus: 'EMI Payment',
+                                balanceAmount,
+                                emiDuration,
                                 timestamp: new Date()
                             };
                             await addDoc(collection(db, "emiDetails"), emiDetails);
                         }
-
+    
+                        // Clear cart and show confirmation
                         await clearUserCart();
                         localStorage.removeItem('cartData');
                         setCartItems([]);
@@ -192,35 +206,37 @@ const Cart = () => {
                         color: "#F37254"
                     }
                 };
-
+    
                 const razorpay = new window.Razorpay(options);
                 razorpay.open();
-            } else {
-                const orderData = {
-                    deliveryDetails,
-                    paymentMethod,
-                    emiStatus,
-                    paymentStatus,
-                    totalAmount,
-                    items: cartItems.map(item => ({
-                        name: item.name,
-                        qty: item.qty,
-                        amount: item.amount
-                    })),
-                    timestamp: new Date()
-                };
-
+    
+            } else if (paymentMethod === 'cod') {
+                // Handle COD payment, no online gateway needed
                 await addDoc(collection(db, "deliveryDetails"), orderData);
+
+                function getDateSixMonthsFromNow() {
+                    const date = new Date();
+                    date.setMonth(date.getMonth()  <= 10000 ? 3 : 6); // Add 6 months to the current month
+                    return date;
+                }
+                
+                // Store EMI details if EMI is selected for COD
                 if (emiOption) {
                     const emiDetails = {
                         totalAmount,
-                        firstPayment: totalAmount * 0.2,
-                        emiStatus: 'EMI Payment',
-                        timestamp: new Date()
+                        firstPayment,
+                        emiStatus: 'EMI Payment (COD)',
+                        balanceAmount,
+                        permontpay,
+                        emiDuration,
+                        timestamp: new Date(),
+                        lastMonthPay: getDateSixMonthsFromNow()
+                        
                     };
-                    await addDoc(collection(db, "emiDetails"), emiDetails);
+                    await addDoc(collection(db, "Emidetails"), emiDetails);
                 }
-
+    
+                // Clear cart and show confirmation
                 await clearUserCart();
                 localStorage.removeItem('cartData');
                 setCartItems([]);
@@ -232,11 +248,13 @@ const Cart = () => {
                     navigate('/');
                 }, 2000);
             }
+    
         } catch (error) {
             console.error("Error processing payment: ", error);
             alert("Failed to process order.");
         }
     };
+    
 
     const handleLogout = () => {
         localStorage.removeItem("loggedInUser");
@@ -290,42 +308,55 @@ const Cart = () => {
                     />
                 </form>
 
-                <h3 className='ch3'>Payment Options</h3>
-                <div>
-                    <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="cod"
-                        checked={paymentMethod === 'cod'}
-                        onChange={handlePaymentMethodChange}
-                    />
-                    Cash on Delivery
-                </div>
-                <div>
-                    <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="online"
-                        checked={paymentMethod === 'online'}
-                        onChange={handlePaymentMethodChange}
-                    />
-                    Online Payment (Razorpay)
+                <label className="check-cont">
+                    EMI Option (Available for orders over ₹6000)
+                    <input type="checkbox" checked={emiOption} onChange={handleEmiOptionChange} />
+                    <span className="checkmark"></span>
+                </label>
+
+                {emiOption && totalAmount > 6000 && (
+                    <div className="emi-info " style={{ color: 'white'}}>
+                        <p >EMI Payment (20% upfront)</p>
+                        <p >First Payment: ₹{totalAmount * 0.2}</p>
+                    </div>
+                )}
+
+                <div className='pay'>
+                    <h3 style={{ color: 'white'}}>Payment Options:</h3>
+                    <div className="paymentMethod" style={{ color: 'white'}} >
+                        <label>
+                            <input 
+                                type="radio" 
+                                value="cod" 
+                                checked={paymentMethod === 'cod'} 
+                                onChange={handlePaymentMethodChange} 
+                            />
+                            Cash on Delivery (COD)
+                        </label>
+                        <label>
+                            <input 
+                                type="radio" 
+                                value="online" 
+                                checked={paymentMethod === 'online'} 
+                                onChange={handlePaymentMethodChange} 
+                            />
+                            Online Payment (via Razorpay)
+                        </label>
+                    </div>
                 </div>
 
-                
-
-                <button className='btn-cart' onClick={handlePayment}>
-                    Place Order
-                </button>
+                <button className='check' onClick={handlePayment}>Place Order</button>
 
                 {showPopup && (
-                    <div className='popup'>
+                    <div className="popup">
                         <p>{confirmationMessage}</p>
                     </div>
                 )}
             </div>
+<div className='cf'>  <Footer /></div>
+          
         </div>
     );
-}
+};
 
-export default Cart; 
+export default Cart;

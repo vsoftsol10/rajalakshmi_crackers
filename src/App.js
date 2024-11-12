@@ -10,6 +10,7 @@ const Sign = lazy(() => import('./Pages/signuppage'));
 const Logins = lazy(() => import('./Pages/Login'));
 const About = lazy(()=>import('./Pages/about'));
 const Contact =lazy(()=>import('./Pages/contact'))
+const Gallery =lazy(()=> import ('./Pages/gallery'))
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/signuppage" element={<Sign />} />
             <Route path="/about" element={<About />} />
             <Route path='/contact'  element={<Contact />}/>
+            <Route path='/gallery' element={<Gallery />}/>
           </Routes>
         </Suspense>
       </Router>

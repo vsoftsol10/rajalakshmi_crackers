@@ -31,8 +31,8 @@ function About() {
       <section className="hero-banner">
         <img src={aboutImage} alt="Hero" className="banner-image" />
         <div className="banner-text">
-          <h1>About RajaLakshmi Crackers</h1>
-          <p>Celebrating Tradition with Premium Quality Crackers</p>
+          <h1 style={{color : 'Black'}}> RajaLakshmi Crackers</h1>
+          <p  style={{color : 'Black'}}>Celebrating Tradition with Premium Quality Crackers</p>
         </div>
       </section>
 

@@ -8,19 +8,23 @@ import { FaInstagram } from "react-icons/fa";
 import { IoLogoYoutube } from "react-icons/io5";
 import { BiPhoneCall } from "react-icons/bi";
 import { Link, useNavigate } from 'react-router-dom';
+import is from './images/ckd.gif';
 import './nav.css';
 
-function NavbarComponent({ isLoggedIn, handleLogout,handleCartClick }) {
+function NavbarComponent({ isLoggedIn, handleLogout, handleCartClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
-
   return (
     <div className='navsmain'>
+      <div className='is'>
+        <img src={is} alt="is" />
+      </div>
+     
       <div className='div1'>
         <h4 className="heads">
           Sivakasi Crackers online, 2025 Diwali Booking Open/சிவகாசி பட்டாசுகள் ஆன்லைன், 2025 தீபாவளி முன்பதிவு திறந்துவிட்டது
@@ -64,10 +68,8 @@ function NavbarComponent({ isLoggedIn, handleLogout,handleCartClick }) {
           <NavbarContent as="div" className="navbar-actions">
             <div className="users">
               {!isLoggedIn ? (
-                <button className="icon-link">
-                  <Link to="/login">
-                    <CgLogIn /> Login
-                  </Link>
+                <button className="icon-link" onClick={() => navigate('/login')}>
+                  <CgLogIn /> Login
                 </button>
               ) : (
                 <button className="icon-link" onClick={handleLogout}>

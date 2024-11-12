@@ -1,0 +1,145 @@
+/* General gallery container */
+.gallery {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  
+  .navs {
+
+    top: 0;
+    z-index: 10;
+    background-color: #f8f9fa;
+    padding: 10px;
+  }
+  
+  /* Gallery navigation buttons */
+  .gallery-navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .nav-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-image: url(./images/newconfetti.png), radial-gradient(#db241e, #790808);
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0 10px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .nav-button:hover {
+    background-color: yellow;
+    color: white;
+  }
+  
+  .nav-button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  /* Content Area */
+  .media-gallery {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Grid for photos */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .photo-item {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+  }
+  
+  /* Grid for videos */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .video-item {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+  }
+  
+/* Safety Measure Section (Content on left, Image on right) */
+.safety-measure {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    background-image: radial-gradient(#db241e, #790808);
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 10px;
+    padding: 20px; /* Added padding for better spacing */
+}
+
+.safety-content {
+    flex: 1;
+    padding-right: 20px;
+    color: white;
+}
+
+.safety-content h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #f1f1f1;
+}
+
+.safety-content p {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.safety-content ul {
+    list-style-type: none;
+   
+    color: white;
+}
+
+.safety-content ul li {
+    position: relative; 
+    font-size: 18px;
+   
+}
+
+.safety-content ul li:before {
+    content: "\2713"; 
+    position: absolute;
+    left: 0;
+    top: 0; 
+    color: white; 
+    font-size: 20px; 
+    margin-top: 3px; 
+}
+
+.safety-image img {
+    max-width: 400px;
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.0);
+}
+
+.ft {
+    margin-top: 2rem;
+}

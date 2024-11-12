@@ -46,9 +46,9 @@ export default function Footer() {
         
         <MDBCol md="4" lg="3" className="mx-auto mb-md-0 mb-4">
             <h6 className="text-uppercase fw-bold mb-4">Contact</h6>
-            <p><MDBIcon icon="home" className="me-2" /> Sivaksi, TN</p>
-            <p><MDBIcon icon="phone" className="me-3" /> + 01 234 567 88</p>
-            <p><MDBIcon icon="print" className="me-3" /> + 01 234 567 89</p>
+            <p className='ps'><MDBIcon icon="home" className="me-2" /> Sivaksi, TN</p>
+            <p  className='ps'><MDBIcon icon="phone" className="me-3" /> + 01 234 567 88</p>
+            <p  className='ps'><MDBIcon icon="print" className="me-3" /> + 01 234 567 89</p>
         </MDBCol>
     </MDBRow>
 </MDBContainer>

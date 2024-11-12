@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, collection, addDoc, query, where, getDocs, doc, getDoc, updateDoc,setDoc } from "firebase/firestore";
-
 import { initializeApp } from "firebase/app";
 import animation from './images/rss.gif';
 import { useNavigate } from 'react-router-dom';
 import './PriceList.css';
+import Footer from './footer';
 import image1 from './images/offer1.webp';
 import image2 from './images/offer2.webp';
 import NavBar from './Navbar';
@@ -144,8 +144,8 @@ const Prices = () => {
         const userName = loggedInUser?.name || "Guest";
     
         const options = {
-            key: "rzp_test_DS4vEwjrMesmsa", // Razorpay Key
-            amount: amount * 100, // Amount in paise
+            key: "rzp_test_DS4vEwjrMesmsa", 
+            amount: amount * 100, 
             currency: "INR",
             name: "Vsoft Solutions",
             description: `Payment for ${offerName}`,
@@ -187,7 +187,7 @@ const Prices = () => {
                         <h4 style={{ color: 'black' }}>Combo 2</h4>
                         <p style={{ color: 'black' }}>Price : ₹3000</p>
                     </div>
-                    <div className='imgsss'><img src={animation} alt="anima" /></div>
+               
                 </div>
                 
             </div>
@@ -256,6 +256,7 @@ const Prices = () => {
                     <button id="cart-button" onClick={handleProceedToCart}>Proceed to Cart</button>
                 )}
             </div>
+            <Footer />
         </div>
     );
 };
