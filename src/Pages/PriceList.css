@@ -74,8 +74,17 @@
 
 #cart-button {
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color:blue;
     color: white;
     border: none;
     cursor: pointer;
+    margin-top: 2rem;
+}
+
+#cart-button :hover{
+    background-color: red;
+}
+
+.pp,.h4pp,.h3pp,.h2pp{
+    font-size: 1rem;
 }

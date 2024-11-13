@@ -5,7 +5,7 @@ import Footer from './footer';
 import image from './images/contact.webp'
 import './contact.css';
 import animation from './images/rss.gif';
-import gifd from './images/gifd.gif';
+
 const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
  
@@ -29,16 +29,15 @@ const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false
         <div className='imgssd'><img src={animation} alt="anima" /></div>
        
     <section className="contact-page">
-      <h2>Contact Us</h2>
-      <p>We'd love to hear from you! Reach out to us with any questions or concerns.</p>
+      <h2 className='csh' >Contact Us</h2>
     
       <div className="contact-container">
         <div className="contact-info">
           <img src={image} alt="Contact Us" className="contact-image" />
           <h3>Contact Information</h3>
-          <p><strong>Phone:</strong> +91 88070 60809</p>
-          <p><strong>Email:</strong> info@radhecrackers.com</p>
-          <p><strong>Address:</strong> 123 Street, Sivakasi, India</p>
+          <p className='cs'><strong>Phone:</strong> +91 88070 60809</p>
+          <p className='cs'><strong>Email:</strong> RajaLakshmi@gmail.com</p>
+          <p className='cs'><strong>Address:</strong> 123 Street, Sivakasi, India</p>
         </div>
   
         <form className="contact-form">
@@ -57,7 +56,8 @@ const ContactPage = () => {   const [isLoggedIn, setIsLoggedIn] = useState(false
         </form>
       </div>
     </section>
-    <Footer />
+  <Footer />
+   
   </div>
   
   );

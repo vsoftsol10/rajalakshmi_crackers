@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, collection, addDoc, query, where, getDocs, doc, getDoc, updateDoc,setDoc } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import animation from './images/rss.gif';
 import { useNavigate } from 'react-router-dom';
 import './PriceList.css';
@@ -19,7 +20,8 @@ const firebaseConfig = {
     measurementId: "G-JKTCSL34SJ"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 const Prices = () => {
@@ -170,22 +172,22 @@ const Prices = () => {
         <div className="price-list">
             
             <NavBar isLoggedIn={isLoggedIn} handleCartClick={() => {}} handleLogout={handleLogout} />
-            <h2 style={{ color: 'black' }}>Price List</h2>
+            <h2 className='h2pp' style={{ color: 'black' }}>Price List</h2>
 
            
             <div className="offers-combos">
-            <h3 style={{ color: 'black' }}>Offers and Combos</h3>
+            <h3 className='h3pp'style={{ color: 'black' }}>Offers and Combos</h3>
 
                 <div className="offers-grid">
                     <div className="offer" onClick={() => handleRazorpayPayment(4000, 'Combo 1')}>
                         <img src={image1} alt="Offer 1" />
-                        <h4 style={{ color: 'black' }}>Combo 1</h4>
-                        <p style={{ color: 'black' }}>Price : ₹4000</p>
+                        <h4  className='h4pp' style={{ color: 'black' }}>Combo 1</h4>
+                        <p className='pp' style={{ color: 'black' }}>Price : ₹4000</p>
                     </div>
                     <div className="offer" onClick={() => handleRazorpayPayment(3000, 'Combo 2')}>
                         <img src={image2} alt="Offer 2" />
-                        <h4 style={{ color: 'black' }}>Combo 2</h4>
-                        <p style={{ color: 'black' }}>Price : ₹3000</p>
+                        <h4 className='h4pp' style={{ color: 'black' }}>Combo 2</h4>
+                        <p className='pp'  style={{ color: 'black' }}>Price : ₹3000</p>
                     </div>
                
                 </div>
